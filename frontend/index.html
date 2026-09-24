@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Job Recommender</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            JobAI
+        </div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#analyze">Find Jobs</a>
+            <a href="#about">About</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <!-- HERO SECTION -->
+
+        <section id="home" class="hero">
+
+            <div class="hero-content">
+
+                <span class="badge">
+                    AI-Powered Career Matching
+                </span>
+
+                <h1>
+                    Find the Right Job<br>
+                    for Your Skills
+                </h1>
+
+                <p>
+                    Upload your resume and let AI analyze your skills,
+                    match you with relevant jobs, and tell you what
+                    skills you should learn next.
+                </p>
+
+                <a href="#analyze" class="primary-btn">
+                    Analyze My Resume
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- ANALYZE SECTION -->
+
+        <section id="analyze" class="analyze-section">
+
+            <div class="section-heading">
+
+                <span class="small-title">
+                    RESUME ANALYZER
+                </span>
+
+                <h2>
+                    Get Personalized Job Recommendations
+                </h2>
+
+                <p>
+                    Upload your PDF or DOCX resume to discover
+                    matching opportunities.
+                </p>
+
+            </div>
+
+
+            <div class="upload-card">
+
+                <div class="upload-icon">
+                    📄
+                </div>
+
+                <h3>
+                    Upload Your Resume
+                </h3>
+
+                <p>
+                    Supported formats: PDF, DOCX
+                </p>
+
+                <input
+                    type="file"
+                    id="resumeFile"
+                    accept=".pdf,.docx"
+                >
+
+                <label for="resumeFile" class="file-label">
+                    Choose Resume
+                </label>
+
+                <p id="selectedFile">
+                    No file selected
+                </p>
+
+                <button
+                    id="analyzeBtn"
+                    class="primary-btn"
+                >
+                    Analyze Resume
+                </button>
+
+                <p id="loading" class="loading hidden">
+                    Analyzing your resume...
+                </p>
+
+                <p id="errorMessage" class="error hidden"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULTS SECTION -->
+
+        <section
+            id="results"
+            class="results-section hidden"
+        >
+
+            <div class="section-heading">
+
+                <span class="small-title">
+                    ANALYSIS RESULTS
+                </span>
+
+                <h2>
+                    Your Career Analysis
+                </h2>
+
+            </div>
+
+
+            <!-- SCORE -->
+
+            <div class="score-card">
+
+                <div>
+
+                    <p class="card-label">
+                        Resume Score
+                    </p>
+
+                    <h3 id="resumeScore">
+                        0
+                    </h3>
+
+                </div>
+
+                <div>
+
+                    <p class="card-label">
+                        Skills Detected
+                    </p>
+
+                    <h3 id="skillCount">
+                        0
+                    </h3>
+
+                </div>
+
+                <div>
+
+                    <p class="card-label">
+                        Jobs Analyzed
+                    </p>
+
+                    <h3 id="jobCount">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <!-- SKILLS -->
+
+            <div class="result-card">
+
+                <h3>
+                    Detected Skills
+                </h3>
+
+                <div
+                    id="skillsContainer"
+                    class="skills-container"
+                ></div>
+
+            </div>
+
+
+            <!-- JOBS -->
+
+            <div class="jobs-container">
+
+                <h2>
+                    Recommended Jobs
+                </h2>
+
+                <div id="jobsList"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ABOUT -->
+
+        <section id="about" class="about-section">
+
+            <div class="section-heading">
+
+                <span class="small-title">
+                    ABOUT JOBAI
+                </span>
+
+                <h2>
+                    Smarter Job Discovery
+                </h2>
+
+                <p>
+                    JobAI analyzes your resume, identifies your skills,
+                    compares them with job requirements, and highlights
+                    the skills you can learn to improve your opportunities.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            © 2026 JobAI — AI Job Recommender
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
