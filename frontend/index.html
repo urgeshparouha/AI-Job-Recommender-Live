@@ -1,1252 +1,1019 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JobAI - AI Job Recommender</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    <title>JobAI - AI Job Recommender</title>
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f7fb;
-    color: #1f2937;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 7%;
-}
+        body {
+            background: #f4f7fb;
+            color: #172b4d;
+            line-height: 1.5;
+        }
 
-.nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        /* =========================
+           HERO
+        ========================= */
 
-.logo {
-    font-size: 26px;
-    font-weight: bold;
-}
+        .hero {
+            background: linear-gradient(135deg, #173b7a, #2864e8);
+            color: white;
+            padding: 40px 7% 100px;
+        }
 
-.logo span {
-    color: #60a5fa;
-}
+        .logo {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 55px;
+            letter-spacing: -1px;
+        }
 
-.hero {
-    background: linear-gradient(135deg, #111827, #2563eb);
-    color: white;
-    padding: 70px 7%;
-}
+        .hero h1 {
+            font-size: 48px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
 
-.hero h1 {
-    font-size: 44px;
-    margin-bottom: 15px;
-}
+        .hero p {
+            font-size: 20px;
+            line-height: 1.7;
+            max-width: 850px;
+            opacity: 0.95;
+        }
 
-.hero p {
-    max-width: 700px;
-    font-size: 18px;
-    line-height: 1.6;
-}
+        /* =========================
+           MAIN
+        ========================= */
 
-.container {
-    width: 86%;
-    max-width: 1300px;
-    margin: 35px auto;
-}
+        .container {
+            width: 94%;
+            max-width: 1250px;
+            margin: -55px auto 60px;
+        }
 
-.upload-card {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-    margin-top: -45px;
-    position: relative;
-}
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+        }
 
-.upload-card h2 {
-    margin-bottom: 20px;
-}
+        .card h2 {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
 
-.upload-area {
-    border: 2px dashed #93c5fd;
-    padding: 35px;
-    text-align: center;
-    border-radius: 12px;
-    background: #eff6ff;
-}
+        /* =========================
+           UPLOAD
+        ========================= */
 
-input[type="file"] {
-    margin: 20px 0;
-}
+        .upload-box {
+            border: 2px dashed #76a8ff;
+            background: #f0f6ff;
+            border-radius: 18px;
+            padding: 45px 25px;
+            text-align: center;
+        }
 
-button {
-    border: none;
-    background: #2563eb;
-    color: white;
-    padding: 13px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
+        .upload-icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+        }
 
-button:hover {
-    background: #1d4ed8;
-}
+        .upload-box p {
+            font-size: 19px;
+            color: #44546a;
+            margin-bottom: 22px;
+        }
 
-button:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-}
+        input[type="file"] {
+            display: block;
+            margin: 0 auto 25px;
+            max-width: 100%;
+            font-size: 15px;
+        }
 
-.error {
-    display: none;
-    background: #fee2e2;
-    color: #991b1b;
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 8px;
-}
+        button {
+            background: #2864e8;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-.success {
-    display: none;
-    background: #dcfce7;
-    color: #166534;
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 8px;
-}
+        button:hover {
+            background: #174fc7;
+            transform: translateY(-1px);
+        }
 
-#results {
-    display: none;
-}
+        button:disabled {
+            background: #9aa4b2;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin: 30px 0;
-}
+        /* =========================
+           MESSAGES
+        ========================= */
 
-.stat-card {
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
+        .message {
+            margin-top: 20px;
+            padding: 15px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            display: none;
+        }
 
-.stat-card h3 {
-    font-size: 34px;
-    color: #2563eb;
-    margin-bottom: 8px;
-}
+        .success {
+            background: #e7f8ed;
+            color: #187a38;
+        }
 
-.section {
-    margin-top: 35px;
-}
+        .error {
+            background: #ffe9e9;
+            color: #c62828;
+        }
 
-.section h2 {
-    margin-bottom: 18px;
-}
+        .loading {
+            background: #fff5d9;
+            color: #806000;
+        }
 
-.skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
+        /* =========================
+           STATS
+        ========================= */
 
-.skill {
-    background: #dbeafe;
-    color: #1e40af;
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: bold;
-}
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
 
-.domains {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 15px;
-}
+        .stat {
+            background: #f6f8fc;
+            border: 1px solid #e6eaf0;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+        }
 
-.domain-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    border-left: 5px solid #2563eb;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
+        .stat h3 {
+            font-size: 38px;
+            color: #2864e8;
+            margin-bottom: 6px;
+        }
 
-.domain-name {
-    font-weight: bold;
-    font-size: 17px;
-    margin-bottom: 8px;
-}
+        .stat p {
+            color: #657184;
+            font-size: 16px;
+            font-weight: 600;
+        }
 
-.domain-count {
-    color: #6b7280;
-    font-size: 14px;
-}
+        /* =========================
+           SKILL BADGES
+        ========================= */
 
-.filters {
-    background: white;
-    padding: 20px;
-    border-radius: 14px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
+        .skills,
+        .missing {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-.filters select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
-}
+        .skill {
+            display: inline-block;
+            background: #eaf1ff;
+            color: #2057c7;
+            border: 1px solid #d5e3ff;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-.job-count {
-    margin: 20px 0;
-    color: #6b7280;
-    font-weight: bold;
-}
+        .missing-skill {
+            display: inline-block;
+            background: #fff0f0;
+            color: #c62828;
+            border: 1px solid #ffd2d2;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-.jobs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-}
+        /* =========================
+           JOB CARDS
+        ========================= */
 
-.job-card {
-    background: white;
-    padding: 24px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
-}
+        .job {
+            border: 1px solid #e1e6ed;
+            border-radius: 17px;
+            padding: 25px;
+            margin-bottom: 18px;
+            background: #ffffff;
+            transition: 0.2s;
+        }
 
-.job-title {
-    font-size: 21px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
+        .job:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            transform: translateY(-2px);
+        }
 
-.company {
-    color: #2563eb;
-    font-weight: bold;
-    margin-bottom: 6px;
-}
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
 
-.location {
-    color: #6b7280;
-    margin-bottom: 15px;
-}
+        .job h3 {
+            font-size: 23px;
+            margin-bottom: 5px;
+            color: #172b4d;
+        }
 
-.match {
-    display: inline-block;
-    background: #dcfce7;
-    color: #166534;
-    padding: 7px 12px;
-    border-radius: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
+        .company {
+            color: #2864e8;
+            font-weight: 700;
+            font-size: 16px;
+        }
 
-.job-section {
-    margin-top: 15px;
-}
+        .match {
+            display: inline-block;
+            background: #e7f8ed;
+            color: #188038;
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
 
-.job-section h4 {
-    margin-bottom: 8px;
-}
+        .job-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #596579;
+            font-size: 15px;
+        }
 
-.job-skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-}
+        .job-section {
+            margin-top: 14px;
+        }
 
-.job-skill {
-    background: #f3f4f6;
-    padding: 6px 9px;
-    border-radius: 6px;
-    font-size: 12px;
-}
+        .job-section strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #27364d;
+        }
 
-.missing {
-    background: #fee2e2;
-    color: #991b1b;
-}
+        .job-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.learn-item {
-    background: #fff7ed;
-    border-left: 4px solid #f97316;
-    padding: 10px;
-    margin-top: 8px;
-    border-radius: 6px;
-}
+        .mini-skill {
+            background: #f2f5f9;
+            color: #48566b;
+            border: 1px solid #e0e5eb;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
 
-.learn-skill {
-    font-weight: bold;
-    color: #c2410c;
-}
+        .mini-matched {
+            background: #eaf8ee;
+            color: #187a38;
+            border-color: #ccebd5;
+        }
 
-.learn-text {
-    font-size: 13px;
-    color: #4b5563;
-    margin-top: 4px;
-}
+        .apply {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 10px 18px;
+            background: #2864e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
 
-.apply-btn {
-    display: inline-block;
-    margin-top: 20px;
-    background: #111827;
-    color: white;
-    text-decoration: none;
-    padding: 11px 18px;
-    border-radius: 8px;
-    font-weight: bold;
-}
+        .apply:hover {
+            background: #174fc7;
+        }
 
-.empty {
-    background: white;
-    padding: 30px;
-    text-align: center;
-    border-radius: 12px;
-    color: #6b7280;
-}
+        /* =========================
+           LEARNING
+        ========================= */
 
-footer {
-    margin-top: 60px;
-    background: #111827;
-    color: white;
-    text-align: center;
-    padding: 25px;
-}
+        .learning-item {
+            background: #f7f9fc;
+            border: 1px solid #e5e9ef;
+            border-radius: 12px;
+            padding: 15px 17px;
+            margin-bottom: 10px;
+        }
 
-@media (max-width: 850px) {
+        .learning-item strong {
+            color: #2864e8;
+        }
 
-    .hero h1 {
-        font-size: 34px;
-    }
+        .learning-item span {
+            color: #5f6b7a;
+        }
 
-    .stats {
-        grid-template-columns: 1fr;
-    }
+        .empty {
+            color: #697586;
+            font-size: 16px;
+        }
 
-    .filters {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #77808f;
+            font-size: 14px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .hero {
+                padding: 30px 6% 85px;
+            }
+
+            .hero h1 {
+                font-size: 35px;
+            }
+
+            .hero p {
+                font-size: 17px;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .card {
+                padding: 23px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .job-header {
+                flex-direction: column;
+            }
+
+            .match {
+                align-self: flex-start;
+            }
+
+            .upload-box {
+                padding: 30px 15px;
+            }
+        }
+    </style>
 </head>
+
 
 <body>
 
-<header>
-    <div class="nav">
-        <div class="logo">Job<span>AI</span></div>
-        <div>AI Job Recommender</div>
-    </div>
-</header>
+    <!-- =========================
+         HERO
+    ========================== -->
 
-<section class="hero">
-    <h1>AI-Powered Career Matching</h1>
+    <section class="hero">
 
-    <p>
-        Upload your resume and discover jobs that match your skills,
-        identify missing skills, and find out what you should learn next.
-    </p>
-</section>
-
-<div class="container">
-
-    <div class="upload-card">
-
-        <h2>Upload Your Resume</h2>
-
-        <div class="upload-area">
-
-            <p>Upload your PDF or DOCX resume</p>
-
-            <input
-                type="file"
-                id="resumeFile"
-                accept=".pdf,.doc,.docx"
-            >
-
-            <br>
-
-            <button
-                type="button"
-                id="analyzeBtn"
-            >
-                Analyze Resume
-            </button>
-
+        <div class="logo">
+            JobAI
         </div>
 
-        <div id="successBox" class="success"></div>
+        <h1>
+            AI-Powered Career Matching
+        </h1>
 
-        <div id="errorBox" class="error"></div>
+        <p>
+            Upload your resume and discover jobs that match your skills,
+            identify missing skills, and find out what you should learn next.
+        </p>
 
-    </div>
+    </section>
 
 
-    <div id="results">
+    <main class="container">
 
-        <div class="stats">
+        <!-- =========================
+             RESUME UPLOAD
+        ========================== -->
 
-            <div class="stat-card">
-                <h3 id="resumeScore">0/100</h3>
-                <p>Resume Score</p>
+        <div class="card">
+
+            <h2>
+                Upload Your Resume
+            </h2>
+
+            <div class="upload-box">
+
+                <div class="upload-icon">
+                    📄
+                </div>
+
+                <p>
+                    Upload your PDF or DOCX resume
+                </p>
+
+                <input
+                    type="file"
+                    id="resumeFile"
+                    accept=".pdf,.docx"
+                >
+
+                <button
+                    id="analyzeBtn"
+                    onclick="analyzeResume()"
+                >
+                    Analyze Resume
+                </button>
+
             </div>
-
-            <div class="stat-card">
-                <h3 id="skillCount">0</h3>
-                <p>Skills Detected</p>
-            </div>
-
-            <div class="stat-card">
-                <h3 id="jobCount">0</h3>
-                <p>Jobs Analyzed</p>
-            </div>
-
-        </div>
-
-
-        <div class="section">
-
-            <h2>Detected Skills</h2>
 
             <div
-                id="skillsContainer"
-                class="skills"
-            ></div>
+                id="message"
+                class="message">
+            </div>
 
         </div>
 
 
-        <div class="section">
+        <!-- =========================
+             RESULTS
+        ========================== -->
 
-            <h2>Your Skill Domains</h2>
-
-            <div
-                id="domainsContainer"
-                class="domains"
-            ></div>
-
-        </div>
+        <section id="results">
 
 
-        <div class="section">
+            <!-- CAREER ANALYSIS -->
 
-            <h2>Recommended Jobs</h2>
+            <div class="card">
 
-            <div class="filters">
+                <h2>
+                    Your Career Analysis
+                </h2>
 
-                <select id="domainFilter">
-                    <option value="">
-                        All Domains
-                    </option>
-                </select>
+                <div class="stats">
 
-                <select id="locationFilter">
-                    <option value="">
-                        All Locations
-                    </option>
-                </select>
+                    <div class="stat">
 
-                <select id="sortFilter">
-                    <option value="default">
-                        Default Order
-                    </option>
+                        <h3 id="resumeScore">
+                            -
+                        </h3>
 
-                    <option value="high">
-                        Highest Match
-                    </option>
+                        <p>
+                            Resume Score
+                        </p>
 
-                    <option value="low">
-                        Lowest Match
-                    </option>
-                </select>
+                    </div>
+
+
+                    <div class="stat">
+
+                        <h3 id="skillCount">
+                            -
+                        </h3>
+
+                        <p>
+                            Skills Detected
+                        </p>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <h3 id="jobCount">
+                            -
+                        </h3>
+
+                        <p>
+                            Jobs Analyzed
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
 
-            <div
-                class="job-count"
-                id="showingCount"
-            >
-                Showing 0 of 0 jobs
+            <!-- DETECTED SKILLS -->
+
+            <div class="card">
+
+                <h2>
+                    Skills Detected
+                </h2>
+
+                <div
+                    id="skills"
+                    class="skills">
+                </div>
+
             </div>
 
 
-            <div
-                id="jobsContainer"
-                class="jobs"
-            ></div>
+            <!-- RECOMMENDED JOBS -->
 
-        </div>
+            <div class="card">
 
-    </div>
+                <h2>
+                    Recommended Jobs
+                </h2>
 
-</div>
+                <div id="jobs">
+                </div>
+
+            </div>
 
 
-<footer>
-    <p>
-        JobAI — AI-Powered Job Recommendation System
-    </p>
-</footer>
+            <!-- LEARNING -->
+
+            <div class="card">
+
+                <h2>
+                    Skills You Should Learn
+                </h2>
+
+                <div
+                    id="missingSkills"
+                    class="missing">
+                </div>
+
+                <div
+                    id="learnList"
+                    style="margin-top:18px;">
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="footer">
+
+        JobAI - AI Powered Job Recommendation System
+
+    </footer>
 
 
 <script>
 
-"use strict";
+    /*
+     * ============================
+     * BACKEND URL
+     * ============================
+     */
+
+    const API_URL =
+        "http://127.0.0.1:8000";
 
 
-const API_URL = "http://127.0.0.1:8000";
+    /*
+     * ============================
+     * ANALYZE RESUME
+     * ============================
+     */
 
-let allRecommendations = [];
+    async function analyzeResume() {
 
-
-const analyzeBtn =
-    document.getElementById("analyzeBtn");
-
-const resumeFile =
-    document.getElementById("resumeFile");
-
-
-analyzeBtn.addEventListener(
-    "click",
-    analyzeResume
-);
-
-
-resumeFile.addEventListener(
-    "change",
-    function() {
-
-        hideError();
-        hideSuccess();
-
-    }
-);
-
-
-// ==========================================
-// ANALYZE RESUME
-// ==========================================
-
-async function analyzeResume() {
-
-    hideError();
-    hideSuccess();
-
-    const file =
-        resumeFile.files[0];
-
-
-    if (!file) {
-
-        showError(
-            "Please select your resume first."
-        );
-
-        return;
-    }
-
-
-    const fileName =
-        file.name.toLowerCase();
-
-
-    if (
-        !fileName.endsWith(".pdf") &&
-        !fileName.endsWith(".doc") &&
-        !fileName.endsWith(".docx")
-    ) {
-
-        showError(
-            "Please upload a PDF or DOC/DOCX file."
-        );
-
-        return;
-    }
-
-
-    analyzeBtn.disabled = true;
-
-    analyzeBtn.textContent =
-        "Analyzing...";
-
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        "file",
-        file
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                API_URL + "/match-jobs",
-                {
-                    method: "POST",
-                    body: formData
-                }
+        const fileInput =
+            document.getElementById(
+                "resumeFile"
             );
 
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Backend returned HTTP " +
-                response.status
+        const button =
+            document.getElementById(
+                "analyzeBtn"
             );
+
+        const results =
+            document.getElementById(
+                "results"
+            );
+
+        const file =
+            fileInput.files[0];
+
+
+        /*
+         * FILE CHECK
+         */
+
+        if (!file) {
+
+            showMessage(
+                "Please select your resume first.",
+                "error"
+            );
+
+            return;
         }
 
 
-        const data =
-            await response.json();
+        const fileName =
+            file.name.toLowerCase();
 
 
-        if (!data.success) {
+        if (
+            !fileName.endsWith(".pdf") &&
+            !fileName.endsWith(".docx")
+        ) {
 
-            throw new Error(
-                data.message ||
-                "Resume analysis failed."
+            showMessage(
+                "Please upload a PDF or DOCX file.",
+                "error"
             );
+
+            return;
         }
 
 
-        allRecommendations =
-            Array.isArray(data.recommendations)
-                ? data.recommendations
-                : [];
+        /*
+         * LOADING
+         */
+
+        button.disabled = true;
+
+        button.innerText =
+            "Analyzing...";
 
 
-        displayResults(data);
-
-
-        showSuccess(
-            "Resume analyzed successfully!"
+        showMessage(
+            "Analyzing your resume. Please wait...",
+            "loading"
         );
 
 
-    } catch (error) {
-
-        console.error(
-            "Analyze error:",
-            error
-        );
+        results.style.display =
+            "none";
 
 
-        showError(
-            "Backend connection failed. " +
-            "Make sure FastAPI is running on " +
-            "https://ai-job-recommender-live.onrender.com"
-        );
+        try {
 
-    } finally {
+            /*
+             * FORM DATA
+             */
 
-        analyzeBtn.disabled = false;
-
-        analyzeBtn.textContent =
-            "Analyze Resume";
-    }
-}
+            const formData =
+                new FormData();
 
 
-// ==========================================
-// DISPLAY RESULTS
-// ==========================================
-
-function displayResults(data) {
-
-    document.getElementById(
-        "results"
-    ).style.display = "block";
-
-
-    document.getElementById(
-        "resumeScore"
-    ).textContent =
-        (data.resume_score ?? 0) + "/100";
-
-
-    document.getElementById(
-        "skillCount"
-    ).textContent =
-        data.skill_count ??
-        (data.detected_skills || []).length;
-
-
-    document.getElementById(
-        "jobCount"
-    ).textContent =
-        data.total_jobs_checked ??
-        allRecommendations.length;
-
-
-    displaySkills(
-        data.detected_skills || []
-    );
-
-
-    displayDomains(
-        data.detected_domains || []
-    );
-
-
-    buildFilters();
-
-
-    resetFilters();
-
-
-    displayJobs(
-        [...allRecommendations]
-    );
-}
-
-
-// ==========================================
-// SKILLS
-// ==========================================
-
-function displaySkills(skills) {
-
-    const container =
-        document.getElementById(
-            "skillsContainer"
-        );
-
-
-    container.innerHTML = "";
-
-
-    skills.forEach(
-        skill => {
-
-            const element =
-                document.createElement("span");
-
-            element.className =
-                "skill";
-
-            element.textContent =
-                skill;
-
-            container.appendChild(
-                element
+            formData.append(
+                "file",
+                file
             );
-        }
-    );
-}
 
 
-// ==========================================
-// DOMAINS
-// ==========================================
+            /*
+             * API REQUEST
+             */
 
-function displayDomains(domains) {
-
-    const container =
-        document.getElementById(
-            "domainsContainer"
-        );
-
-
-    container.innerHTML = "";
-
-
-    if (!domains.length) {
-
-        container.innerHTML =
-            "<p>No domains detected.</p>";
-
-        return;
-    }
-
-
-    domains.forEach(
-        domain => {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "domain-card";
-
-
-            const name =
-                domain.domain ||
-                "Unknown Domain";
-
-
-            const skills =
-                Array.isArray(
-                    domain.matched_skills
-                )
-                    ? domain.matched_skills
-                    : [];
-
-
-            const count =
-                domain.skill_count ??
-                skills.length;
-
-
-            card.innerHTML = `
-
-                <div class="domain-name">
-                    ${escapeHTML(name)}
-                </div>
-
-                <div class="domain-count">
-                    ${count} Related skill${count === 1 ? "" : "s"}
-                </div>
-
-            `;
-
-
-            container.appendChild(card);
-        }
-    );
-}
-
-
-// ==========================================
-// BUILD FILTERS
-// ==========================================
-
-function buildFilters() {
-
-    const domainFilter =
-        document.getElementById(
-            "domainFilter"
-        );
-
-
-    const locationFilter =
-        document.getElementById(
-            "locationFilter"
-        );
-
-
-    const domains =
-        new Set();
-
-
-    const locations =
-        new Set();
-
-
-    allRecommendations.forEach(
-        job => {
-
-            if (
-                Array.isArray(
-                    job.job_domains
-                )
-            ) {
-
-                job.job_domains.forEach(
-                    domain => {
-
-                        if (domain) {
-                            domains.add(
-                                String(domain)
-                            );
-                        }
-
+            const response =
+                await fetch(
+                    API_URL + "/match-jobs",
+                    {
+                        method: "POST",
+                        body: formData
                     }
                 );
-            }
 
 
-            if (job.location) {
+            if (!response.ok) {
 
-                locations.add(
-                    String(job.location)
+                throw new Error(
+                    "Backend error: " +
+                    response.status
                 );
 
             }
+
+
+            /*
+             * RESPONSE
+             */
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "JobAI API Response:",
+                data
+            );
+
+
+            if (!data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "Resume analysis failed."
+                );
+
+            }
+
+
+            /*
+             * SHOW RESULTS
+             */
+
+            displayResults(data);
+
+
+            showMessage(
+                "Resume analyzed successfully!",
+                "success"
+            );
+
+
+            results.style.display =
+                "block";
+
+
+            setTimeout(() => {
+
+                results.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+            }, 300);
+
 
         }
-    );
 
+        catch (error) {
 
-    domainFilter.innerHTML =
-        '<option value="">All Domains</option>';
-
-
-    [...domains]
-        .sort()
-        .forEach(
-            domain => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    domain;
-
-                option.textContent =
-                    domain;
-
-                domainFilter.appendChild(
-                    option
-                );
-            }
-        );
-
-
-    locationFilter.innerHTML =
-        '<option value="">All Locations</option>';
-
-
-    [...locations]
-        .sort()
-        .forEach(
-            location => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    location;
-
-                option.textContent =
-                    location;
-
-                locationFilter.appendChild(
-                    option
-                );
-            }
-        );
-
-
-    domainFilter.onchange =
-        applyFilters;
-
-
-    locationFilter.onchange =
-        applyFilters;
-
-
-    document.getElementById(
-        "sortFilter"
-    ).onchange =
-        applyFilters;
-}
-
-
-// ==========================================
-// RESET FILTERS
-// ==========================================
-
-function resetFilters() {
-
-    document.getElementById(
-        "domainFilter"
-    ).value = "";
-
-
-    document.getElementById(
-        "locationFilter"
-    ).value = "";
-
-
-    document.getElementById(
-        "sortFilter"
-    ).value = "default";
-}
-
-
-// ==========================================
-// APPLY FILTERS
-// ==========================================
-
-function applyFilters() {
-
-    const selectedDomain =
-        document.getElementById(
-            "domainFilter"
-        ).value
-        .trim()
-        .toLowerCase();
-
-
-    const selectedLocation =
-        document.getElementById(
-            "locationFilter"
-        ).value
-        .trim()
-        .toLowerCase();
-
-
-    const sort =
-        document.getElementById(
-            "sortFilter"
-        ).value;
-
-
-    let filtered =
-        [...allRecommendations];
-
-
-    if (selectedDomain) {
-
-        filtered =
-            filtered.filter(
-                job => {
-
-                    const domains =
-                        Array.isArray(
-                            job.job_domains
-                        )
-                            ? job.job_domains
-                                .map(
-                                    d =>
-                                        String(d)
-                                        .toLowerCase()
-                                )
-                            : [];
-
-
-                    return domains.includes(
-                        selectedDomain
-                    );
-                }
+            console.error(
+                "JobAI Error:",
+                error
             );
-    }
 
 
-    if (selectedLocation) {
-
-        filtered =
-            filtered.filter(
-                job => {
-
-                    return String(
-                        job.location || ""
-                    )
-                    .toLowerCase()
-                    === selectedLocation;
-
-                }
+            showMessage(
+                "Backend connection failed. Make sure FastAPI is running on http://127.0.0.1:8000",
+                "error"
             );
+
+        }
+
+        finally {
+
+            button.disabled = false;
+
+            button.innerText =
+                "Analyze Resume";
+
+        }
+
     }
 
 
-    if (sort === "high") {
+    /*
+     * ============================
+     * DISPLAY RESULTS
+     * ============================
+     */
 
-        filtered.sort(
-            (a, b) =>
-                getMatch(b) -
-                getMatch(a)
-        );
-    }
-
-
-    if (sort === "low") {
-
-        filtered.sort(
-            (a, b) =>
-                getMatch(a) -
-                getMatch(b)
-        );
-    }
+    function displayResults(data) {
 
 
-    displayJobs(filtered);
-}
+        /*
+         * RESUME SCORE
+         */
 
-
-// ==========================================
-// DISPLAY JOBS
-// ==========================================
-
-function displayJobs(jobs) {
-
-    const container =
         document.getElementById(
-            "jobsContainer"
-        );
+            "resumeScore"
+        ).innerText =
+            (data.resume_score ?? 0) +
+            "/100";
 
 
-    const count =
+        /*
+         * DETECTED SKILLS
+         */
+
+        const skills =
+            data.detected_skills || [];
+
+
         document.getElementById(
-            "showingCount"
-        );
+            "skillCount"
+        ).innerText =
+            skills.length;
 
 
-    container.innerHTML = "";
+        const skillsContainer =
+            document.getElementById(
+                "skills"
+            );
 
 
-    count.textContent =
-        `Showing ${jobs.length} of ${allRecommendations.length} jobs`;
+        skillsContainer.innerHTML =
+            "";
 
 
-    if (!jobs.length) {
+        skills.forEach(skill => {
 
-        container.innerHTML = `
+            const badge =
+                document.createElement(
+                    "span"
+                );
 
-            <div class="empty">
 
-                <h3>No matching jobs found</h3>
+            badge.className =
+                "skill";
 
-                <p>
-                    Try changing your filters.
+
+            badge.innerText =
+                formatText(skill);
+
+
+            skillsContainer.appendChild(
+                badge
+            );
+
+        });
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Backend uses
+         * data.recommendations
+         */
+
+        const jobs =
+            data.recommendations ||
+            data.recommended_jobs ||
+            data.jobs ||
+            [];
+
+
+        /*
+         * JOB COUNT
+         */
+
+        document.getElementById(
+            "jobCount"
+        ).innerText =
+            data.total_jobs_checked ??
+            jobs.length;
+
+
+        /*
+         * JOB CONTAINER
+         */
+
+        const jobsContainer =
+            document.getElementById(
+                "jobs"
+            );
+
+
+        jobsContainer.innerHTML =
+            "";
+
+
+        if (jobs.length === 0) {
+
+            jobsContainer.innerHTML = `
+                <p class="empty">
+                    No matching jobs found.
                 </p>
+            `;
 
-            </div>
-
-        `;
-
-        return;
-    }
+        }
 
 
-    jobs.forEach(
-        job => {
+        /*
+         * CREATE JOB CARDS
+         */
 
-            const card =
+        jobs.forEach(job => {
+
+            const div =
                 document.createElement(
                     "div"
                 );
 
 
-            card.className =
-                "job-card";
+            div.className =
+                "job";
 
 
-            const required =
-                toArray(
-                    job.required_skills
-                );
+            const title =
+                job.job_title ||
+                job.title ||
+                "Job";
 
 
-            const matched =
-                toArray(
-                    job.matched_skills
-                );
+            const company =
+                job.company ||
+                "Company not specified";
 
 
-            const missing =
-                toArray(
-                    job.missing_skills
-                );
+            const location =
+                job.location ||
+                "Location not specified";
 
 
-            const learning =
+            const experience =
+                job.experience ||
+                "Not specified";
+
+
+            const match =
+                job.match_percentage ??
+                job.match_score ??
+                job.match ??
+                0;
+
+
+            const requiredSkills =
+                job.required_skills ||
+                [];
+
+
+            const matchedSkills =
+                job.matched_skills ||
+                [];
+
+
+            const missingSkills =
+                job.missing_skills ||
+                [];
+
+
+            /*
+             * REQUIRED SKILLS
+             */
+
+            let requiredHTML =
+                "";
+
+
+            if (
                 Array.isArray(
-                    job.what_to_learn
-                )
-                    ? job.what_to_learn
-                    : [];
+                    requiredSkills
+                ) &&
+                requiredSkills.length
+            ) {
 
-
-            let learningHTML = "";
-
-
-            if (learning.length) {
-
-                learningHTML = `
+                requiredHTML = `
 
                     <div class="job-section">
 
-                        <h4>What To Learn</h4>
-
-                        ${learning
-                            .map(
-                                item => {
-
-                                    const skill =
-                                        typeof item === "object"
-                                            ? item.skill
-                                            : item;
-
-
-                                    const suggestion =
-                                        typeof item === "object"
-                                            ? item.suggestion
-                                            : "";
-
-
-                                    return `
-
-                                        <div class="learn-item">
-
-                                            <div class="learn-skill">
-                                                ${escapeHTML(
-                                                    skill || ""
-                                                )}
-                                            </div>
-
-                                            <div class="learn-text">
-                                                ${escapeHTML(
-                                                    suggestion || ""
-                                                )}
-                                            </div>
-
-                                        </div>
-
-                                    `;
-                                }
-                            )
-                            .join("")}
-
-                    </div>
-
-                `;
-            }
-
-
-            let missingHTML = "";
-
-
-            if (missing.length) {
-
-                missingHTML = `
-
-                    <div class="job-section">
-
-                        <h4>Missing Skills</h4>
+                        <strong>
+                            Required Skills
+                        </strong>
 
                         <div class="job-skills">
 
-                            ${missing
+                            ${requiredSkills
                                 .map(
                                     skill => `
-
-                                        <span class="job-skill missing">
-                                            ${escapeHTML(skill)}
+                                        <span class="mini-skill">
+                                            ${formatText(skill)}
                                         </span>
-
                                     `
                                 )
                                 .join("")}
@@ -1256,234 +1023,510 @@ function displayJobs(jobs) {
                     </div>
 
                 `;
+
             }
 
 
-            card.innerHTML = `
+            /*
+             * MATCHED SKILLS
+             */
 
-                <div class="job-title">
-                    ${escapeHTML(
-                        job.job_title || ""
-                    )}
-                </div>
-
-
-                <div class="company">
-                    ${escapeHTML(
-                        job.company || ""
-                    )}
-                </div>
+            let matchedHTML =
+                "";
 
 
-                <div class="location">
-                    📍
-                    ${escapeHTML(
-                        job.location || ""
-                    )}
-                    •
-                    ${escapeHTML(
-                        job.experience || ""
-                    )}
-                </div>
+            if (
+                Array.isArray(
+                    matchedSkills
+                ) &&
+                matchedSkills.length
+            ) {
+
+                matchedHTML = `
+
+                    <div class="job-section">
+
+                        <strong>
+                            Matched Skills
+                        </strong>
+
+                        <div class="job-skills">
+
+                            ${matchedSkills
+                                .map(
+                                    skill => `
+                                        <span class="mini-skill mini-matched">
+                                            ${formatText(skill)}
+                                        </span>
+                                    `
+                                )
+                                .join("")}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
 
 
-                <div class="match">
-                    ${getMatch(job)}% Match
-                </div>
+            /*
+             * MISSING SKILLS
+             */
+
+            let missingHTML =
+                "";
 
 
-                <div class="job-section">
+            if (
+                Array.isArray(
+                    missingSkills
+                ) &&
+                missingSkills.length
+            ) {
 
-                    <h4>Required Skills</h4>
+                missingHTML = `
 
-                    <div class="job-skills">
+                    <div class="job-section">
 
-                        ${required
-                            .map(
-                                skill => `
+                        <strong>
+                            Missing Skills
+                        </strong>
 
-                                    <span class="job-skill">
-                                        ${escapeHTML(skill)}
-                                    </span>
+                        <div class="job-skills">
 
-                                `
-                            )
-                            .join("")}
+                            ${missingSkills
+                                .map(
+                                    skill => `
+                                        <span class="missing-skill">
+                                            ${formatText(skill)}
+                                        </span>
+                                    `
+                                )
+                                .join("")}
 
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            /*
+             * APPLY BUTTON
+             */
+
+            let applyHTML =
+                "";
+
+
+            if (job.apply_url) {
+
+                applyHTML = `
+
+                    <a
+                        class="apply"
+                        href="${job.apply_url}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Apply Now
+                    </a>
+
+                `;
+
+            }
+
+
+            /*
+             * JOB CARD
+             */
+
+            div.innerHTML = `
+
+                <div class="job-header">
+
+                    <div>
+
+                        <h3>
+                            ${formatText(title)}
+                        </h3>
+
+                        <div class="company">
+                            ${formatText(company)}
+                        </div>
+
+                    </div>
+
+                    <div class="match">
+                        ${match}% Match
                     </div>
 
                 </div>
 
 
-                <div class="job-section">
+                <div class="job-info">
 
-                    <h4>Matched Skills</h4>
+                    <span>
+                        📍 ${formatText(location)}
+                    </span>
 
-                    <div class="job-skills">
-
-                        ${matched
-                            .map(
-                                skill => `
-
-                                    <span class="job-skill">
-                                        ${escapeHTML(skill)}
-                                    </span>
-
-                                `
-                            )
-                            .join("")}
-
-                    </div>
+                    <span>
+                        💼 ${formatText(experience)}
+                    </span>
 
                 </div>
 
+
+                ${requiredHTML}
+
+                ${matchedHTML}
 
                 ${missingHTML}
 
-
-                ${learningHTML}
-
-
-                ${
-                    job.apply_url
-                        ? `
-
-                            <a
-                                class="apply-btn"
-                                href="${escapeAttribute(
-                                    job.apply_url
-                                )}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Apply / View Job
-                            </a>
-
-                        `
-                        : ""
-                }
+                ${applyHTML}
 
             `;
 
 
-            container.appendChild(card);
+            jobsContainer.appendChild(
+                div
+            );
+
+        });
+
+
+        /*
+         * ============================
+         * ALL MISSING SKILLS
+         * ============================
+         */
+
+        const allMissing =
+            collectMissingSkills(
+                jobs
+            );
+
+
+        const missingContainer =
+            document.getElementById(
+                "missingSkills"
+            );
+
+
+        missingContainer.innerHTML =
+            "";
+
+
+        const uniqueMissing =
+            [
+                ...new Set(
+                    allMissing.map(
+                        skill =>
+                            typeof skill === "string"
+                                ? skill
+                                : skill.skill
+                    )
+                )
+            ];
+
+
+        uniqueMissing.forEach(skill => {
+
+            if (!skill) return;
+
+
+            const badge =
+                document.createElement(
+                    "span"
+                );
+
+
+            badge.className =
+                "missing-skill";
+
+
+            badge.innerText =
+                formatText(skill);
+
+
+            missingContainer.appendChild(
+                badge
+            );
+
+        });
+
+
+        /*
+         * ============================
+         * WHAT TO LEARN
+         * ============================
+         */
+
+        const learnContainer =
+            document.getElementById(
+                "learnList"
+            );
+
+
+        learnContainer.innerHTML =
+            "";
+
+
+        const learningItems =
+            collectLearningItems(
+                jobs
+            );
+
+
+        if (
+            learningItems.length === 0
+        ) {
+
+            learnContainer.innerHTML = `
+
+                <div class="learning-item">
+
+                    <strong>
+                        Great!
+                    </strong>
+
+                    <span>
+                        Your current skills cover the required skills for the matched jobs.
+                    </span>
+
+                </div>
+
+            `;
 
         }
-    );
-}
 
 
-// ==========================================
-// HELPERS
-// ==========================================
+        learningItems.forEach(
+            item => {
 
-function toArray(value) {
+                const skill =
+                    item.skill ||
+                    item;
 
-    if (Array.isArray(value)) {
-        return value;
+
+                const suggestion =
+                    item.suggestion ||
+                    "";
+
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "learning-item";
+
+
+                div.innerHTML = `
+
+                    <strong>
+                        Learn ${formatText(skill)}
+                    </strong>
+
+                    ${
+                        suggestion
+                            ? `
+                                <br>
+                                <span>
+                                    ${suggestion}
+                                </span>
+                            `
+                            : ""
+                    }
+
+                `;
+
+
+                learnContainer.appendChild(
+                    div
+                );
+
+            }
+        );
+
     }
 
 
-    if (typeof value === "string") {
+    /*
+     * ============================
+     * MISSING SKILLS
+     * ============================
+     */
 
-        return value
-            .split(",")
-            .map(
-                item =>
-                    item.trim()
+    function collectMissingSkills(
+        jobs
+    ) {
+
+        const missing = [];
+
+
+        jobs.forEach(job => {
+
+            if (
+                Array.isArray(
+                    job.missing_skills
+                )
+            ) {
+
+                missing.push(
+                    ...job.missing_skills
+                );
+
+            }
+
+        });
+
+
+        return missing;
+
+    }
+
+
+    /*
+     * ============================
+     * LEARNING ITEMS
+     * ============================
+     */
+
+    function collectLearningItems(
+        jobs
+    ) {
+
+        const items = [];
+
+
+        jobs.forEach(job => {
+
+            if (
+                Array.isArray(
+                    job.what_to_learn
+                )
+            ) {
+
+                items.push(
+                    ...job.what_to_learn
+                );
+
+            }
+
+        });
+
+
+        /*
+         * Remove duplicate skills
+         */
+
+        const unique =
+            new Map();
+
+
+        items.forEach(item => {
+
+            const skill =
+                typeof item === "string"
+                    ? item
+                    : item.skill;
+
+
+            if (!skill) return;
+
+
+            const key =
+                skill.toLowerCase();
+
+
+            if (!unique.has(key)) {
+
+                unique.set(
+                    key,
+                    item
+                );
+
+            }
+
+        });
+
+
+        return [
+            ...unique.values()
+        ];
+
+    }
+
+
+    /*
+     * ============================
+     * FORMAT TEXT
+     * ============================
+     */
+
+    function formatText(
+        text
+    ) {
+
+        if (!text) {
+            return "";
+        }
+
+
+        return String(text)
+            .replaceAll(
+                "_",
+                " "
             )
-            .filter(Boolean);
+            .replace(
+                /\b\w/g,
+                char =>
+                    char.toUpperCase()
+            );
+
     }
 
 
-    return [];
-}
+    /*
+     * ============================
+     * MESSAGE
+     * ============================
+     */
+
+    function showMessage(
+        text,
+        type
+    ) {
+
+        const message =
+            document.getElementById(
+                "message"
+            );
 
 
-function getMatch(job) {
-
-    const value =
-        Number(
-            job.match_percentage
-        );
+        message.innerText =
+            text;
 
 
-    return Number.isFinite(value)
-        ? value
-        : 0;
-}
+        message.className =
+            "message " +
+            type;
 
 
-function escapeHTML(value) {
+        message.style.display =
+            "block";
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-
-function escapeAttribute(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-}
-
-
-function showError(message) {
-
-    const box =
-        document.getElementById(
-            "errorBox"
-        );
-
-    box.textContent =
-        message;
-
-    box.style.display =
-        "block";
-}
-
-
-function hideError() {
-
-    document.getElementById(
-        "errorBox"
-    ).style.display =
-        "none";
-}
-
-
-function showSuccess(message) {
-
-    const box =
-        document.getElementById(
-            "successBox"
-        );
-
-    box.textContent =
-        message;
-
-    box.style.display =
-        "block";
-}
-
-
-function hideSuccess() {
-
-    document.getElementById(
-        "successBox"
-    ).style.display =
-        "none";
-}
+    }
 
 </script>
 
 </body>
+
 </html>
-```
