@@ -43,12 +43,14 @@ def get_db_connection():
 
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", "3306")),
         user=os.getenv("DB_USER", "root"),
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv(
             "DB_NAME",
             "ai_job_recommender"
-        )
+        ),
+        ssl_disabled=False
     )
 
 
@@ -83,11 +85,9 @@ def db_test():
     try:
 
         db = get_db_connection()
-
         cursor = db.cursor()
 
         cursor.execute("SELECT DATABASE()")
-
         result = cursor.fetchone()
 
         cursor.close()
@@ -113,154 +113,61 @@ def db_test():
 DOMAIN_SKILLS = {
 
     "Software Development": [
-        "python",
-        "java",
-        "c++",
-        "c",
-        "c#",
-        "javascript",
-        "typescript",
-        "go",
-        "rust",
-        "kotlin",
-        "swift",
-        "oop",
-        "oops",
-        "dsa",
-        "algorithms",
-        "data structures",
-        "dbms",
-        "operating systems",
-        "computer networks",
-        "git",
-        "github",
-        "rest api",
-        "api"
+        "python", "java", "c++", "c", "c#", "javascript",
+        "typescript", "go", "rust", "kotlin", "swift",
+        "oop", "oops", "dsa", "algorithms", "data structures",
+        "dbms", "operating systems", "computer networks",
+        "git", "github", "rest api", "api"
     ],
 
     "Backend Development": [
-        "python",
-        "java",
-        "node.js",
-        "nodejs",
-        "fastapi",
-        "django",
-        "flask",
-        "spring",
-        "spring boot",
-        "express",
-        "rest api",
-        "api",
-        "sql",
-        "mysql",
-        "postgresql",
-        "mongodb",
-        "redis",
-        "docker",
-        "git",
-        "github"
+        "python", "java", "node.js", "nodejs", "fastapi",
+        "django", "flask", "spring", "spring boot", "express",
+        "rest api", "api", "sql", "mysql", "postgresql",
+        "mongodb", "redis", "docker", "git", "github"
     ],
 
     "Frontend Development": [
-        "html",
-        "css",
-        "javascript",
-        "typescript",
-        "react",
-        "angular",
-        "vue",
-        "next.js",
-        "bootstrap",
-        "tailwind",
-        "redux",
-        "responsive design"
+        "html", "css", "javascript", "typescript", "react",
+        "angular", "vue", "next.js", "bootstrap", "tailwind",
+        "redux", "responsive design"
     ],
 
     "Data Science": [
-        "python",
-        "sql",
-        "pandas",
-        "numpy",
-        "matplotlib",
-        "seaborn",
-        "scikit-learn",
-        "statistics",
-        "data science",
-        "data analysis",
-        "data visualization",
-        "jupyter"
+        "python", "sql", "pandas", "numpy", "matplotlib",
+        "seaborn", "scikit-learn", "statistics", "data science",
+        "data analysis", "data visualization", "jupyter"
     ],
 
     "AI / Machine Learning": [
-        "python",
-        "machine learning",
-        "deep learning",
-        "artificial intelligence",
-        "scikit-learn",
-        "tensorflow",
-        "pytorch",
-        "keras",
-        "nlp",
-        "natural language processing",
-        "computer vision",
-        "opencv",
-        "transformers",
-        "llm",
+        "python", "machine learning", "deep learning",
+        "artificial intelligence", "scikit-learn", "tensorflow",
+        "pytorch", "keras", "nlp", "natural language processing",
+        "computer vision", "opencv", "transformers", "llm",
         "generative ai"
     ],
 
     "Data Analytics": [
-        "python",
-        "sql",
-        "excel",
-        "power bi",
-        "tableau",
-        "pandas",
-        "numpy",
-        "statistics",
-        "data analysis",
+        "python", "sql", "excel", "power bi", "tableau",
+        "pandas", "numpy", "statistics", "data analysis",
         "data visualization"
     ],
 
     "Cloud / DevOps": [
-        "aws",
-        "azure",
-        "gcp",
-        "google cloud",
-        "docker",
-        "kubernetes",
-        "linux",
-        "jenkins",
-        "ci/cd",
-        "terraform",
-        "ansible",
-        "git",
-        "github"
+        "aws", "azure", "gcp", "google cloud", "docker",
+        "kubernetes", "linux", "jenkins", "ci/cd",
+        "terraform", "ansible", "git", "github"
     ],
 
     "Cybersecurity": [
-        "cybersecurity",
-        "network security",
-        "ethical hacking",
-        "penetration testing",
-        "cryptography",
-        "linux",
-        "computer networks",
-        "owasp",
-        "firewall",
-        "siem"
+        "cybersecurity", "network security", "ethical hacking",
+        "penetration testing", "cryptography", "linux",
+        "computer networks", "owasp", "firewall", "siem"
     ],
 
     "Database": [
-        "sql",
-        "mysql",
-        "postgresql",
-        "mongodb",
-        "oracle",
-        "redis",
-        "dbms",
-        "database design",
-        "normalization"
+        "sql", "mysql", "postgresql", "mongodb", "oracle",
+        "redis", "dbms", "database design", "normalization"
     ]
 }
 
@@ -287,27 +194,19 @@ SKILL_ALIASES = {
 
     "object oriented programming": "oop",
     "object-oriented programming": "oop",
-
     "object oriented": "oop",
 
     "data structures and algorithms": "dsa",
 
     "machine-learning": "machine learning",
-
     "deep-learning": "deep learning",
-
     "artificial-intelligence": "artificial intelligence",
 
     "powerbi": "power bi",
-
     "scikit learn": "scikit-learn",
-
     "node js": "nodejs",
-
     "springboot": "spring boot",
-
     "computer networking": "computer networks"
-
 }
 
 
@@ -318,36 +217,33 @@ SKILL_ALIASES = {
 def detect_skills(text):
 
     text = text.lower()
-
     detected = set()
 
-    # Normalize aliases
     for alias, actual_skill in SKILL_ALIASES.items():
 
         if alias in text:
-
             detected.add(actual_skill)
 
-    # Detect normal skills
     for skill in SKILLS:
 
         skill_lower = skill.lower()
 
-        # Very short skills need word boundaries
         if len(skill_lower) <= 2:
 
             pattern = r"\b" + re.escape(skill_lower) + r"\b"
 
             if re.search(pattern, text):
-
                 detected.add(skill)
 
         else:
 
-            pattern = r"(?<![a-z0-9])" + re.escape(skill_lower) + r"(?![a-z0-9])"
+            pattern = (
+                r"(?<![a-z0-9])"
+                + re.escape(skill_lower)
+                + r"(?![a-z0-9])"
+            )
 
             if re.search(pattern, text):
-
                 detected.add(skill)
 
     return sorted(detected)
@@ -357,13 +253,9 @@ def detect_skills(text):
 # DOMAIN DETECTION
 # =========================================================
 
-def detect_domains(
-    text,
-    detected_skills
-):
+def detect_domains(text, detected_skills):
 
     detected_set = set(detected_skills)
-
     domains = []
 
     for domain, domain_skills in DOMAIN_SKILLS.items():
@@ -377,13 +269,9 @@ def detect_domains(
         if matched:
 
             domains.append({
-
                 "domain": domain,
-
                 "matched_skills": matched,
-
                 "skill_count": len(matched)
-
             })
 
     domains.sort(
@@ -398,14 +286,10 @@ def detect_domains(
 # RESUME SCORE
 # =========================================================
 
-def calculate_resume_score(
-    text,
-    detected_skills
-):
+def calculate_resume_score(text, detected_skills):
 
     score = 0
 
-    # Skills
     skill_score = min(
         len(detected_skills) * 5,
         50
@@ -413,7 +297,6 @@ def calculate_resume_score(
 
     score += skill_score
 
-    # Experience / project keywords
     experience_keywords = [
         "project",
         "projects",
@@ -426,10 +309,8 @@ def calculate_resume_score(
     for keyword in experience_keywords:
 
         if keyword in text.lower():
-
             score += 10
 
-    # Education
     education_keywords = [
         "btech",
         "b.tech",
@@ -441,7 +322,6 @@ def calculate_resume_score(
     for keyword in education_keywords:
 
         if keyword in text.lower():
-
             score += 5
 
     return min(score, 100)
@@ -451,10 +331,7 @@ def calculate_resume_score(
 # RESUME TEXT EXTRACTION
 # =========================================================
 
-def extract_resume_text(
-    file_bytes,
-    filename
-):
+def extract_resume_text(file_bytes, filename):
 
     filename = filename.lower()
 
@@ -471,11 +348,9 @@ def extract_resume_text(
             page_text = page.extract_text()
 
             if page_text:
-
                 text += page_text + "\n"
 
         return text
-
 
     elif filename.endswith(".docx"):
 
@@ -486,11 +361,9 @@ def extract_resume_text(
         text = ""
 
         for paragraph in document.paragraphs:
-
             text += paragraph.text + "\n"
 
         return text
-
 
     else:
 
@@ -531,27 +404,16 @@ async def upload_resume(
         )
 
         return {
-
             "success": True,
-
             "filename": file.filename,
-
             "detected_skills": detected_skills,
-
-            "skill_count": len(
-                detected_skills
-            ),
-
+            "skill_count": len(detected_skills),
             "resume_score": resume_score,
-
             "detected_domains": detected_domains,
-
             "message": "Resume analyzed successfully"
-
         }
 
     except HTTPException:
-
         raise
 
     except Exception as e:
@@ -608,13 +470,9 @@ def get_jobs():
         jobs = get_jobs_from_database()
 
         return {
-
             "success": True,
-
             "count": len(jobs),
-
             "jobs": jobs
-
         }
 
     except Exception as e:
@@ -792,7 +650,6 @@ LEARNING_MAP = {
 
     "owasp":
         "Learn common web security risks and secure application development."
-
 }
 
 
@@ -800,9 +657,7 @@ LEARNING_MAP = {
 # LEARNING SUGGESTIONS
 # =========================================================
 
-def get_learning_suggestions(
-    missing_skills
-):
+def get_learning_suggestions(missing_skills):
 
     suggestions = []
 
@@ -813,23 +668,16 @@ def get_learning_suggestions(
         if skill_lower in LEARNING_MAP:
 
             suggestions.append({
-
                 "skill": skill,
-
-                "suggestion":
-                    LEARNING_MAP[skill_lower]
-
+                "suggestion": LEARNING_MAP[skill_lower]
             })
 
         else:
 
             suggestions.append({
-
                 "skill": skill,
-
                 "suggestion":
                     f"Learn {skill} and practice it through projects."
-
             })
 
     return suggestions
@@ -839,9 +687,7 @@ def get_learning_suggestions(
 # JOB DOMAIN DETECTION
 # =========================================================
 
-def detect_job_domains(
-    required_skills
-):
+def detect_job_domains(required_skills):
 
     required_set = set(
         skill.lower().strip()
@@ -857,10 +703,7 @@ def detect_job_domains(
         )
 
         if overlap:
-
-            domains.append(
-                domain
-            )
+            domains.append(domain)
 
     return domains
 
@@ -887,25 +730,13 @@ def calculate_intelligent_match(
     if not required:
 
         return {
-
             "match_percentage": 0,
-
             "matched_skills": [],
-
             "missing_skills": [],
-
             "skill_score": 0,
-
             "core_skill_score": 0,
-
             "domain_score": 0
-
         }
-
-
-    # -----------------------------------------------------
-    # MATCHED / MISSING
-    # -----------------------------------------------------
 
     matched = sorted(
         detected.intersection(required)
@@ -915,62 +746,39 @@ def calculate_intelligent_match(
         required - detected
     )
 
-
-    # -----------------------------------------------------
-    # BASIC SKILL SCORE
-    # -----------------------------------------------------
-
     skill_score = (
-        len(matched)
-        /
+        len(matched) /
         len(required)
     ) * 100
 
-
-    # -----------------------------------------------------
-    # CORE SKILLS
-    # -----------------------------------------------------
-
     core_skills = {
-
         "python",
         "java",
         "c++",
         "javascript",
         "typescript",
-
         "sql",
-
         "machine learning",
         "artificial intelligence",
-
         "react",
-
         "fastapi",
         "django",
-
         "aws",
         "docker"
-
     }
 
-
-    core_required = (
-        required
-        .intersection(core_skills)
+    core_required = required.intersection(
+        core_skills
     )
-
 
     if core_required:
 
-        core_matched = (
-            detected
-            .intersection(core_required)
+        core_matched = detected.intersection(
+            core_required
         )
 
         core_skill_score = (
-            len(core_matched)
-            /
+            len(core_matched) /
             len(core_required)
         ) * 100
 
@@ -978,46 +786,31 @@ def calculate_intelligent_match(
 
         core_skill_score = skill_score
 
-
-    # -----------------------------------------------------
-    # DOMAIN SCORE
-    # -----------------------------------------------------
-
     detected_domains = []
 
     for domain, domain_skills in DOMAIN_SKILLS.items():
 
-        overlap = (
-            detected
-            .intersection(
-                set(domain_skills)
-            )
+        overlap = detected.intersection(
+            set(domain_skills)
         )
 
         if overlap:
-
-            detected_domains.append(
-                domain
-            )
-
+            detected_domains.append(domain)
 
     job_domains = detect_job_domains(
         required_skills
     )
 
-
     if job_domains:
 
-        matching_domains = (
-            set(detected_domains)
-            .intersection(
-                set(job_domains)
-            )
+        matching_domains = set(
+            detected_domains
+        ).intersection(
+            set(job_domains)
         )
 
         domain_score = (
-            len(matching_domains)
-            /
+            len(matching_domains) /
             len(job_domains)
         ) * 100
 
@@ -1025,30 +818,17 @@ def calculate_intelligent_match(
 
         domain_score = 0
 
-
-    # -----------------------------------------------------
-    # FINAL SCORE
-    # -----------------------------------------------------
-
     final_score = (
-
         skill_score * 0.70
-
         +
-
         core_skill_score * 0.20
-
         +
-
         domain_score * 0.10
-
     )
-
 
     final_score = round(
         min(final_score, 100)
     )
-
 
     return {
 
@@ -1069,7 +849,6 @@ def calculate_intelligent_match(
 
         "domain_score":
             round(domain_score)
-
     }
 
 
@@ -1084,21 +863,12 @@ async def match_jobs(
 
     try:
 
-        # -------------------------------------------------
-        # READ RESUME
-        # -------------------------------------------------
-
         file_bytes = await file.read()
 
         text = extract_resume_text(
             file_bytes,
             file.filename
         )
-
-
-        # -------------------------------------------------
-        # RESUME ANALYSIS
-        # -------------------------------------------------
 
         detected_skills = detect_skills(
             text
@@ -1114,52 +884,30 @@ async def match_jobs(
             detected_skills
         )
 
-
-        # -------------------------------------------------
-        # DATABASE JOBS
-        # -------------------------------------------------
-
         jobs = get_jobs_from_database()
 
         matched_jobs = []
 
-
-        # -------------------------------------------------
-        # MATCH EVERY JOB
-        # -------------------------------------------------
-
         for job in jobs:
 
             required_skills = [
-
                 skill.strip().lower()
-
-                for skill
-                in job["required_skills"].split(",")
-
+                for skill in job["required_skills"].split(",")
                 if skill.strip()
-
             ]
 
-
             match_result = calculate_intelligent_match(
-
                 detected_skills,
-
                 required_skills
-
             )
 
-
-            missing_skills = (
-                match_result["missing_skills"]
-            )
-
+            missing_skills = match_result[
+                "missing_skills"
+            ]
 
             job_domains = detect_job_domains(
                 required_skills
             )
-
 
             matched_jobs.append({
 
@@ -1213,7 +961,6 @@ async def match_jobs(
                         match_result[
                             "domain_score"
                         ]
-
                 },
 
                 "apply_url":
@@ -1223,27 +970,13 @@ async def match_jobs(
                     get_learning_suggestions(
                         missing_skills
                     )
-
             })
 
-
-        # -------------------------------------------------
-        # SORT BY MATCH
-        # -------------------------------------------------
-
         matched_jobs.sort(
-
             key=lambda x:
                 x["match_percentage"],
-
             reverse=True
-
         )
-
-
-        # -------------------------------------------------
-        # FINAL RESPONSE
-        # -------------------------------------------------
 
         return {
 
@@ -1270,21 +1003,14 @@ async def match_jobs(
 
             "recommendations":
                 matched_jobs
-
         }
 
-
     except HTTPException:
-
         raise
-
 
     except Exception as e:
 
         raise HTTPException(
-
             status_code=500,
-
             detail=str(e)
-
         )
