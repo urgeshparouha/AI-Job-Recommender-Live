@@ -21,10 +21,6 @@
             line-height: 1.5;
         }
 
-        /* =========================
-           HERO
-        ========================= */
-
         .hero {
             background: linear-gradient(135deg, #173b7a, #2864e8);
             color: white;
@@ -35,7 +31,6 @@
             font-size: 30px;
             font-weight: 800;
             margin-bottom: 55px;
-            letter-spacing: -1px;
         }
 
         .hero h1 {
@@ -48,12 +43,7 @@
             font-size: 20px;
             line-height: 1.7;
             max-width: 850px;
-            opacity: 0.95;
         }
-
-        /* =========================
-           MAIN
-        ========================= */
 
         .container {
             width: 94%;
@@ -73,10 +63,6 @@
             font-size: 28px;
             margin-bottom: 25px;
         }
-
-        /* =========================
-           UPLOAD
-        ========================= */
 
         .upload-box {
             border: 2px dashed #76a8ff;
@@ -113,23 +99,16 @@
             font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
         }
 
         button:hover {
             background: #174fc7;
-            transform: translateY(-1px);
         }
 
         button:disabled {
             background: #9aa4b2;
             cursor: not-allowed;
-            transform: none;
         }
-
-        /* =========================
-           MESSAGES
-        ========================= */
 
         .message {
             margin-top: 20px;
@@ -153,10 +132,6 @@
             background: #fff5d9;
             color: #806000;
         }
-
-        /* =========================
-           STATS
-        ========================= */
 
         .stats {
             display: grid;
@@ -184,19 +159,15 @@
             font-weight: 600;
         }
 
-        /* =========================
-           SKILL BADGES
-        ========================= */
-
         .skills,
-        .missing {
+        .missing,
+        .job-skills {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
 
         .skill {
-            display: inline-block;
             background: #eaf1ff;
             color: #2057c7;
             border: 1px solid #d5e3ff;
@@ -207,7 +178,6 @@
         }
 
         .missing-skill {
-            display: inline-block;
             background: #fff0f0;
             color: #c62828;
             border: 1px solid #ffd2d2;
@@ -217,16 +187,12 @@
             font-weight: 700;
         }
 
-        /* =========================
-           JOB CARDS
-        ========================= */
-
         .job {
             border: 1px solid #e1e6ed;
             border-radius: 17px;
             padding: 25px;
             margin-bottom: 18px;
-            background: #ffffff;
+            background: white;
             transition: 0.2s;
         }
 
@@ -246,7 +212,6 @@
         .job h3 {
             font-size: 23px;
             margin-bottom: 5px;
-            color: #172b4d;
         }
 
         .company {
@@ -256,7 +221,6 @@
         }
 
         .match {
-            display: inline-block;
             background: #e7f8ed;
             color: #188038;
             padding: 7px 13px;
@@ -282,13 +246,6 @@
         .job-section strong {
             display: block;
             margin-bottom: 8px;
-            color: #27364d;
-        }
-
-        .job-skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
         .mini-skill {
@@ -309,11 +266,11 @@
         .apply {
             display: inline-block;
             margin-top: 18px;
-            padding: 10px 18px;
+            padding: 11px 20px;
             background: #2864e8;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 9px;
             font-size: 14px;
             font-weight: 700;
             transition: 0.2s;
@@ -321,11 +278,8 @@
 
         .apply:hover {
             background: #174fc7;
+            transform: translateY(-1px);
         }
-
-        /* =========================
-           LEARNING
-        ========================= */
 
         .learning-item {
             background: #f7f9fc;
@@ -348,20 +302,12 @@
             font-size: 16px;
         }
 
-        /* =========================
-           FOOTER
-        ========================= */
-
         .footer {
             text-align: center;
             padding: 30px;
             color: #77808f;
             font-size: 14px;
         }
-
-        /* =========================
-           MOBILE
-        ========================= */
 
         @media (max-width: 750px) {
 
@@ -396,20 +342,11 @@
             .match {
                 align-self: flex-start;
             }
-
-            .upload-box {
-                padding: 30px 15px;
-            }
         }
     </style>
 </head>
 
-
 <body>
-
-    <!-- =========================
-         HERO
-    ========================== -->
 
     <section class="hero">
 
@@ -428,12 +365,7 @@
 
     </section>
 
-
     <main class="container">
-
-        <!-- =========================
-             RESUME UPLOAD
-        ========================== -->
 
         <div class="card">
 
@@ -473,15 +405,7 @@
 
         </div>
 
-
-        <!-- =========================
-             RESULTS
-        ========================== -->
-
-        <section id="results">
-
-
-            <!-- CAREER ANALYSIS -->
+        <section id="results" style="display:none;">
 
             <div class="card">
 
@@ -492,49 +416,23 @@
                 <div class="stats">
 
                     <div class="stat">
-
-                        <h3 id="resumeScore">
-                            -
-                        </h3>
-
-                        <p>
-                            Resume Score
-                        </p>
-
+                        <h3 id="resumeScore">-</h3>
+                        <p>Resume Score</p>
                     </div>
 
-
                     <div class="stat">
-
-                        <h3 id="skillCount">
-                            -
-                        </h3>
-
-                        <p>
-                            Skills Detected
-                        </p>
-
+                        <h3 id="skillCount">-</h3>
+                        <p>Skills Detected</p>
                     </div>
 
-
                     <div class="stat">
-
-                        <h3 id="jobCount">
-                            -
-                        </h3>
-
-                        <p>
-                            Jobs Analyzed
-                        </p>
-
+                        <h3 id="jobCount">-</h3>
+                        <p>Jobs Analyzed</p>
                     </div>
 
                 </div>
 
             </div>
-
-
-            <!-- DETECTED SKILLS -->
 
             <div class="card">
 
@@ -549,22 +447,15 @@
 
             </div>
 
-
-            <!-- RECOMMENDED JOBS -->
-
             <div class="card">
 
                 <h2>
                     Recommended Jobs
                 </h2>
 
-                <div id="jobs">
-                </div>
+                <div id="jobs"></div>
 
             </div>
-
-
-            <!-- LEARNING -->
 
             <div class="card">
 
@@ -588,55 +479,77 @@
 
     </main>
 
-
     <footer class="footer">
-
         JobAI - AI Powered Job Recommendation System
-
     </footer>
 
 
 <script>
 
-    /*
-     * ============================
-     * BACKEND URL
-     * ============================
-     */
+    /* ============================
+       BACKEND
+    ============================ */
 
-    const API_URL = "https://ai-job-recommender-backend.onrender.com";
+    const API_URL =
+        "https://ai-job-recommender-backend.onrender.com";
 
 
-    /*
-     * ============================
-     * ANALYZE RESUME
-     * ============================
-     */
+    /* ============================
+       COMPANY APPLY LINKS
+    ============================ */
+
+    const companyApplyUrls = {
+
+        "Amazon":
+            "https://www.amazon.jobs/en/",
+
+        "Google":
+            "https://careers.google.com/",
+
+        "Microsoft":
+            "https://jobs.careers.microsoft.com/",
+
+        "Accenture":
+            "https://www.accenture.com/in-en/careers",
+
+        "IBM":
+            "https://www.ibm.com/careers/search",
+
+        "Infosys":
+            "https://www.infosys.com/careers/apply.html",
+
+        "TCS":
+            "https://www.tcs.com/careers/india",
+
+        "Wipro":
+            "https://careers.wipro.com/",
+
+        "Cognizant":
+            "https://careers.cognizant.com/",
+
+        "Deloitte":
+            "https://www.deloitte.com/in/en/careers.html"
+    };
+
+
+    /* ============================
+       ANALYZE RESUME
+    ============================ */
 
     async function analyzeResume() {
 
         const fileInput =
-            document.getElementById(
-                "resumeFile"
-            );
+            document.getElementById("resumeFile");
 
         const button =
-            document.getElementById(
-                "analyzeBtn"
-            );
+            document.getElementById("analyzeBtn");
 
         const results =
-            document.getElementById(
-                "results"
-            );
+            document.getElementById("results");
 
         const file =
             fileInput.files[0];
 
-
-        /*
-         * FILE CHECK
-         */
 
         if (!file) {
 
@@ -667,14 +580,8 @@
         }
 
 
-        /*
-         * LOADING
-         */
-
         button.disabled = true;
-
-        button.innerText =
-            "Analyzing...";
+        button.innerText = "Analyzing...";
 
 
         showMessage(
@@ -683,29 +590,19 @@
         );
 
 
-        results.style.display =
-            "none";
+        results.style.display = "none";
 
 
         try {
 
-            /*
-             * FORM DATA
-             */
-
             const formData =
                 new FormData();
-
 
             formData.append(
                 "file",
                 file
             );
 
-
-            /*
-             * API REQUEST
-             */
 
             const response =
                 await fetch(
@@ -727,10 +624,6 @@
             }
 
 
-            /*
-             * RESPONSE
-             */
-
             const data =
                 await response.json();
 
@@ -751,10 +644,6 @@
             }
 
 
-            /*
-             * SHOW RESULTS
-             */
-
             displayResults(data);
 
 
@@ -764,8 +653,7 @@
             );
 
 
-            results.style.display =
-                "block";
+            results.style.display = "block";
 
 
             setTimeout(() => {
@@ -788,7 +676,7 @@
 
 
             showMessage(
-                "Backend connection failed. Make sure FastAPI is running on http://127.0.0.1:8000",
+                "Backend connection failed. Please try again.",
                 "error"
             );
 
@@ -797,38 +685,24 @@
         finally {
 
             button.disabled = false;
-
-            button.innerText =
-                "Analyze Resume";
+            button.innerText = "Analyze Resume";
 
         }
 
     }
 
 
-    /*
-     * ============================
-     * DISPLAY RESULTS
-     * ============================
-     */
+    /* ============================
+       DISPLAY RESULTS
+    ============================ */
 
     function displayResults(data) {
-
-
-        /*
-         * RESUME SCORE
-         */
 
         document.getElementById(
             "resumeScore"
         ).innerText =
-            (data.resume_score ?? 0) +
-            "/100";
+            (data.resume_score ?? 0) + "/100";
 
-
-        /*
-         * DETECTED SKILLS
-         */
 
         const skills =
             data.detected_skills || [];
@@ -841,30 +715,21 @@
 
 
         const skillsContainer =
-            document.getElementById(
-                "skills"
-            );
+            document.getElementById("skills");
 
 
-        skillsContainer.innerHTML =
-            "";
+        skillsContainer.innerHTML = "";
 
 
         skills.forEach(skill => {
 
             const badge =
-                document.createElement(
-                    "span"
-                );
+                document.createElement("span");
 
-
-            badge.className =
-                "skill";
-
+            badge.className = "skill";
 
             badge.innerText =
                 formatText(skill);
-
 
             skillsContainer.appendChild(
                 badge
@@ -873,23 +738,12 @@
         });
 
 
-        /*
-         * IMPORTANT:
-         *
-         * Backend uses
-         * data.recommendations
-         */
-
         const jobs =
             data.recommendations ||
             data.recommended_jobs ||
             data.jobs ||
             [];
 
-
-        /*
-         * JOB COUNT
-         */
 
         document.getElementById(
             "jobCount"
@@ -898,18 +752,11 @@
             jobs.length;
 
 
-        /*
-         * JOB CONTAINER
-         */
-
         const jobsContainer =
-            document.getElementById(
-                "jobs"
-            );
+            document.getElementById("jobs");
 
 
-        jobsContainer.innerHTML =
-            "";
+        jobsContainer.innerHTML = "";
 
 
         if (jobs.length === 0) {
@@ -923,20 +770,12 @@
         }
 
 
-        /*
-         * CREATE JOB CARDS
-         */
-
         jobs.forEach(job => {
 
             const div =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
-
-            div.className =
-                "job";
+            div.className = "job";
 
 
             const title =
@@ -968,34 +807,29 @@
 
 
             const requiredSkills =
-                job.required_skills ||
-                [];
+                Array.isArray(job.required_skills)
+                    ? job.required_skills
+                    : [];
 
 
             const matchedSkills =
-                job.matched_skills ||
-                [];
+                Array.isArray(job.matched_skills)
+                    ? job.matched_skills
+                    : [];
 
 
             const missingSkills =
-                job.missing_skills ||
-                [];
+                Array.isArray(job.missing_skills)
+                    ? job.missing_skills
+                    : [];
 
 
-            /*
-             * REQUIRED SKILLS
-             */
+            /* REQUIRED SKILLS */
 
-            let requiredHTML =
-                "";
+            let requiredHTML = "";
 
 
-            if (
-                Array.isArray(
-                    requiredSkills
-                ) &&
-                requiredSkills.length
-            ) {
+            if (requiredSkills.length) {
 
                 requiredHTML = `
 
@@ -1007,15 +841,13 @@
 
                         <div class="job-skills">
 
-                            ${requiredSkills
-                                .map(
-                                    skill => `
-                                        <span class="mini-skill">
-                                            ${formatText(skill)}
-                                        </span>
-                                    `
-                                )
-                                .join("")}
+                            ${requiredSkills.map(
+                                skill => `
+                                    <span class="mini-skill">
+                                        ${formatText(skill)}
+                                    </span>
+                                `
+                            ).join("")}
 
                         </div>
 
@@ -1026,20 +858,12 @@
             }
 
 
-            /*
-             * MATCHED SKILLS
-             */
+            /* MATCHED SKILLS */
 
-            let matchedHTML =
-                "";
+            let matchedHTML = "";
 
 
-            if (
-                Array.isArray(
-                    matchedSkills
-                ) &&
-                matchedSkills.length
-            ) {
+            if (matchedSkills.length) {
 
                 matchedHTML = `
 
@@ -1051,15 +875,13 @@
 
                         <div class="job-skills">
 
-                            ${matchedSkills
-                                .map(
-                                    skill => `
-                                        <span class="mini-skill mini-matched">
-                                            ${formatText(skill)}
-                                        </span>
-                                    `
-                                )
-                                .join("")}
+                            ${matchedSkills.map(
+                                skill => `
+                                    <span class="mini-skill mini-matched">
+                                        ${formatText(skill)}
+                                    </span>
+                                `
+                            ).join("")}
 
                         </div>
 
@@ -1070,20 +892,12 @@
             }
 
 
-            /*
-             * MISSING SKILLS
-             */
+            /* MISSING SKILLS */
 
-            let missingHTML =
-                "";
+            let missingHTML = "";
 
 
-            if (
-                Array.isArray(
-                    missingSkills
-                ) &&
-                missingSkills.length
-            ) {
+            if (missingSkills.length) {
 
                 missingHTML = `
 
@@ -1095,15 +909,13 @@
 
                         <div class="job-skills">
 
-                            ${missingSkills
-                                .map(
-                                    skill => `
-                                        <span class="missing-skill">
-                                            ${formatText(skill)}
-                                        </span>
-                                    `
-                                )
-                                .join("")}
+                            ${missingSkills.map(
+                                skill => `
+                                    <span class="missing-skill">
+                                        ${formatText(skill)}
+                                    </span>
+                                `
+                            ).join("")}
 
                         </div>
 
@@ -1114,25 +926,28 @@
             }
 
 
-            /*
-             * APPLY BUTTON
-             */
+            /* APPLY BUTTON */
 
-            let applyHTML =
+            const finalApplyUrl =
+                job.apply_url ||
+                companyApplyUrls[company] ||
                 "";
 
 
-            if (job.apply_url) {
+            let applyHTML = "";
+
+
+            if (finalApplyUrl) {
 
                 applyHTML = `
 
                     <a
                         class="apply"
-                        href="${job.apply_url}"
+                        href="${finalApplyUrl}"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Apply Now
+                        Apply Now →
                     </a>
 
                 `;
@@ -1140,9 +955,7 @@
             }
 
 
-            /*
-             * JOB CARD
-             */
+            /* JOB CARD */
 
             div.innerHTML = `
 
@@ -1191,23 +1004,17 @@
             `;
 
 
-            jobsContainer.appendChild(
-                div
-            );
+            jobsContainer.appendChild(div);
 
         });
 
 
-        /*
-         * ============================
-         * ALL MISSING SKILLS
-         * ============================
-         */
+        /* ============================
+           ALL MISSING SKILLS
+        ============================ */
 
         const allMissing =
-            collectMissingSkills(
-                jobs
-            );
+            collectMissingSkills(jobs);
 
 
         const missingContainer =
@@ -1216,21 +1023,18 @@
             );
 
 
-        missingContainer.innerHTML =
-            "";
+        missingContainer.innerHTML = "";
 
 
-        const uniqueMissing =
-            [
-                ...new Set(
-                    allMissing.map(
-                        skill =>
-                            typeof skill === "string"
-                                ? skill
-                                : skill.skill
-                    )
+        const uniqueMissing = [
+            ...new Set(
+                allMissing.map(skill =>
+                    typeof skill === "string"
+                        ? skill
+                        : skill.skill
                 )
-            ];
+            )
+        ];
 
 
         uniqueMissing.forEach(skill => {
@@ -1239,9 +1043,7 @@
 
 
             const badge =
-                document.createElement(
-                    "span"
-                );
+                document.createElement("span");
 
 
             badge.className =
@@ -1259,11 +1061,9 @@
         });
 
 
-        /*
-         * ============================
-         * WHAT TO LEARN
-         * ============================
-         */
+        /* ============================
+           WHAT TO LEARN
+        ============================ */
 
         const learnContainer =
             document.getElementById(
@@ -1271,19 +1071,14 @@
             );
 
 
-        learnContainer.innerHTML =
-            "";
+        learnContainer.innerHTML = "";
 
 
         const learningItems =
-            collectLearningItems(
-                jobs
-            );
+            collectLearningItems(jobs);
 
 
-        if (
-            learningItems.length === 0
-        ) {
+        if (learningItems.length === 0) {
 
             learnContainer.innerHTML = `
 
@@ -1304,68 +1099,58 @@
         }
 
 
-        learningItems.forEach(
-            item => {
+        learningItems.forEach(item => {
 
-                const skill =
-                    item.skill ||
-                    item;
-
-
-                const suggestion =
-                    item.suggestion ||
-                    "";
+            const skill =
+                item.skill ||
+                item;
 
 
-                const div =
-                    document.createElement(
-                        "div"
-                    );
+            const suggestion =
+                item.suggestion ||
+                "";
 
 
-                div.className =
-                    "learning-item";
+            const div =
+                document.createElement("div");
 
 
-                div.innerHTML = `
-
-                    <strong>
-                        Learn ${formatText(skill)}
-                    </strong>
-
-                    ${
-                        suggestion
-                            ? `
-                                <br>
-                                <span>
-                                    ${suggestion}
-                                </span>
-                            `
-                            : ""
-                    }
-
-                `;
+            div.className =
+                "learning-item";
 
 
-                learnContainer.appendChild(
-                    div
-                );
+            div.innerHTML = `
 
-            }
-        );
+                <strong>
+                    Learn ${formatText(skill)}
+                </strong>
+
+                ${
+                    suggestion
+                        ? `
+                            <br>
+                            <span>
+                                ${suggestion}
+                            </span>
+                        `
+                        : ""
+                }
+
+            `;
+
+
+            learnContainer.appendChild(div);
+
+        });
 
     }
 
 
-    /*
-     * ============================
-     * MISSING SKILLS
-     * ============================
-     */
+    /* ============================
+       COLLECT MISSING SKILLS
+    ============================ */
 
-    function collectMissingSkills(
-        jobs
-    ) {
+    function collectMissingSkills(jobs) {
 
         const missing = [];
 
@@ -1392,15 +1177,11 @@
     }
 
 
-    /*
-     * ============================
-     * LEARNING ITEMS
-     * ============================
-     */
+    /* ============================
+       COLLECT LEARNING ITEMS
+    ============================ */
 
-    function collectLearningItems(
-        jobs
-    ) {
+    function collectLearningItems(jobs) {
 
         const items = [];
 
@@ -1421,10 +1202,6 @@
 
         });
 
-
-        /*
-         * Remove duplicate skills
-         */
 
         const unique =
             new Map();
@@ -1464,15 +1241,11 @@
     }
 
 
-    /*
-     * ============================
-     * FORMAT TEXT
-     * ============================
-     */
+    /* ============================
+       FORMAT TEXT
+    ============================ */
 
-    function formatText(
-        text
-    ) {
+    function formatText(text) {
 
         if (!text) {
             return "";
@@ -1480,10 +1253,7 @@
 
 
         return String(text)
-            .replaceAll(
-                "_",
-                " "
-            )
+            .replaceAll("_", " ")
             .replace(
                 /\b\w/g,
                 char =>
@@ -1493,16 +1263,11 @@
     }
 
 
-    /*
-     * ============================
-     * MESSAGE
-     * ============================
-     */
+    /* ============================
+       MESSAGE
+    ============================ */
 
-    function showMessage(
-        text,
-        type
-    ) {
+    function showMessage(text, type) {
 
         const message =
             document.getElementById(
@@ -1510,13 +1275,11 @@
             );
 
 
-        message.innerText =
-            text;
+        message.innerText = text;
 
 
         message.className =
-            "message " +
-            type;
+            "message " + type;
 
 
         message.style.display =
@@ -1527,5 +1290,4 @@
 </script>
 
 </body>
-
 </html>
