@@ -4,7 +4,6 @@ from pypdf import PdfReader
 from docx import Document
 import io
 import os
-import re
 import mysql.connector
 from dotenv import load_dotenv
 
@@ -12,12 +11,12 @@ load_dotenv()
 
 
 # =========================================================
-# APP
+# FASTAPI APP
 # =========================================================
 
 app = FastAPI(
     title="AI Job Recommender API",
-    description="AI-powered resume analysis and intelligent job recommendation system",
+    description="AI-powered resume analysis and job recommendation system",
     version="3.0.0"
 )
 
@@ -36,21 +35,16 @@ app.add_middleware(
 
 
 # =========================================================
-# MYSQL DATABASE
+# MYSQL DATABASE CONNECTION
 # =========================================================
 
 def get_db_connection():
 
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
-        port=int(os.getenv("DB_PORT", "3306")),
         user=os.getenv("DB_USER", "root"),
         password=os.getenv("DB_PASSWORD"),
-        database=os.getenv(
-            "DB_NAME",
-            "ai_job_recommender"
-        ),
-        ssl_disabled=False
+        database=os.getenv("DB_NAME", "ai_job_recommender")
     )
 
 
@@ -62,8 +56,7 @@ def get_db_connection():
 def home():
 
     return {
-        "message": "AI Job Recommender Backend is Running!",
-        "version": "3.0.0"
+        "message": "AI Job Recommender Backend is Running!"
     }
 
 
@@ -85,9 +78,11 @@ def db_test():
     try:
 
         db = get_db_connection()
+
         cursor = db.cursor()
 
         cursor.execute("SELECT DATABASE()")
+
         result = cursor.fetchone()
 
         cursor.close()
@@ -107,107 +102,59 @@ def db_test():
 
 
 # =========================================================
-# DOMAIN SKILLS
+# SKILLS LIST
 # =========================================================
 
-DOMAIN_SKILLS = {
+SKILLS = [
 
-    "Software Development": [
-        "python", "java", "c++", "c", "c#", "javascript",
-        "typescript", "go", "rust", "kotlin", "swift",
-        "oop", "oops", "dsa", "algorithms", "data structures",
-        "dbms", "operating systems", "computer networks",
-        "git", "github", "rest api", "api"
-    ],
+    "python",
+    "java",
+    "c++",
+    "javascript",
+    "html",
+    "css",
+    "react",
+    "node.js",
+    "fastapi",
+    "django",
+    "flask",
 
-    "Backend Development": [
-        "python", "java", "node.js", "nodejs", "fastapi",
-        "django", "flask", "spring", "spring boot", "express",
-        "rest api", "api", "sql", "mysql", "postgresql",
-        "mongodb", "redis", "docker", "git", "github"
-    ],
+    "sql",
+    "mysql",
+    "postgresql",
+    "mongodb",
 
-    "Frontend Development": [
-        "html", "css", "javascript", "typescript", "react",
-        "angular", "vue", "next.js", "bootstrap", "tailwind",
-        "redux", "responsive design"
-    ],
+    "git",
+    "github",
 
-    "Data Science": [
-        "python", "sql", "pandas", "numpy", "matplotlib",
-        "seaborn", "scikit-learn", "statistics", "data science",
-        "data analysis", "data visualization", "jupyter"
-    ],
+    "dsa",
+    "algorithms",
+    "data structures",
+    "oops",
+    "oop",
+    "dbms",
+    "operating systems",
+    "computer networks",
 
-    "AI / Machine Learning": [
-        "python", "machine learning", "deep learning",
-        "artificial intelligence", "scikit-learn", "tensorflow",
-        "pytorch", "keras", "nlp", "natural language processing",
-        "computer vision", "opencv", "transformers", "llm",
-        "generative ai"
-    ],
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "scikit-learn",
 
-    "Data Analytics": [
-        "python", "sql", "excel", "power bi", "tableau",
-        "pandas", "numpy", "statistics", "data analysis",
-        "data visualization"
-    ],
+    "machine learning",
+    "deep learning",
+    "artificial intelligence",
+    "data science",
 
-    "Cloud / DevOps": [
-        "aws", "azure", "gcp", "google cloud", "docker",
-        "kubernetes", "linux", "jenkins", "ci/cd",
-        "terraform", "ansible", "git", "github"
-    ],
+    "excel",
+    "power bi",
+    "tableau",
 
-    "Cybersecurity": [
-        "cybersecurity", "network security", "ethical hacking",
-        "penetration testing", "cryptography", "linux",
-        "computer networks", "owasp", "firewall", "siem"
-    ],
+    "aws",
+    "azure",
+    "docker"
 
-    "Database": [
-        "sql", "mysql", "postgresql", "mongodb", "oracle",
-        "redis", "dbms", "database design", "normalization"
-    ]
-}
-
-
-# =========================================================
-# COMBINED SKILLS
-# =========================================================
-
-SKILLS = sorted(
-    set(
-        skill
-        for skills in DOMAIN_SKILLS.values()
-        for skill in skills
-    ),
-    key=lambda x: (-len(x), x)
-)
-
-
-# =========================================================
-# SKILL ALIASES
-# =========================================================
-
-SKILL_ALIASES = {
-
-    "object oriented programming": "oop",
-    "object-oriented programming": "oop",
-    "object oriented": "oop",
-
-    "data structures and algorithms": "dsa",
-
-    "machine-learning": "machine learning",
-    "deep-learning": "deep learning",
-    "artificial-intelligence": "artificial intelligence",
-
-    "powerbi": "power bi",
-    "scikit learn": "scikit-learn",
-    "node js": "nodejs",
-    "springboot": "spring boot",
-    "computer networking": "computer networks"
-}
+]
 
 
 # =========================================================
@@ -217,114 +164,190 @@ SKILL_ALIASES = {
 def detect_skills(text):
 
     text = text.lower()
-    detected = set()
 
-    for alias, actual_skill in SKILL_ALIASES.items():
-
-        if alias in text:
-            detected.add(actual_skill)
+    detected = []
 
     for skill in SKILLS:
 
-        skill_lower = skill.lower()
+        if skill.lower() in text:
 
-        if len(skill_lower) <= 2:
+            detected.append(skill)
 
-            pattern = r"\b" + re.escape(skill_lower) + r"\b"
-
-            if re.search(pattern, text):
-                detected.add(skill)
-
-        else:
-
-            pattern = (
-                r"(?<![a-z0-9])"
-                + re.escape(skill_lower)
-                + r"(?![a-z0-9])"
-            )
-
-            if re.search(pattern, text):
-                detected.add(skill)
-
-    return sorted(detected)
+    return detected
 
 
 # =========================================================
-# DOMAIN DETECTION
+# REALISTIC RESUME SCORE
 # =========================================================
-
-def detect_domains(text, detected_skills):
-
-    detected_set = set(detected_skills)
-    domains = []
-
-    for domain, domain_skills in DOMAIN_SKILLS.items():
-
-        matched = sorted(
-            detected_set.intersection(
-                set(domain_skills)
-            )
-        )
-
-        if matched:
-
-            domains.append({
-                "domain": domain,
-                "matched_skills": matched,
-                "skill_count": len(matched)
-            })
-
-    domains.sort(
-        key=lambda x: x["skill_count"],
-        reverse=True
-    )
-
-    return domains
-
-
-# =========================================================
-# RESUME SCORE
+#
+# TOTAL = 100
+#
+# Skills                 = 35
+# Projects               = 20
+# Education              = 15
+# Experience/Internship  = 15
+# Resume Completeness    = 15
+#
 # =========================================================
 
 def calculate_resume_score(text, detected_skills):
 
-    score = 0
+    text = text.lower()
+
+
+    # =====================================================
+    # 1. SKILLS SCORE - 35 MARKS
+    # =====================================================
 
     skill_score = min(
-        len(detected_skills) * 5,
-        50
+        len(detected_skills) * 2.5,
+        35
     )
 
-    score += skill_score
 
-    experience_keywords = [
+    # =====================================================
+    # 2. PROJECTS SCORE - 20 MARKS
+    # =====================================================
+
+    project_keywords = [
+
         "project",
         "projects",
-        "internship",
-        "experience",
-        "developer",
-        "engineer"
+        "github",
+        "developed",
+        "built",
+        "implemented",
+        "application",
+        "system"
+
     ]
 
-    for keyword in experience_keywords:
+    project_hits = sum(
 
-        if keyword in text.lower():
-            score += 10
+        1
+        for keyword in project_keywords
+        if keyword in text
+
+    )
+
+    project_score = min(
+        project_hits * 2.5,
+        20
+    )
+
+
+    # =====================================================
+    # 3. EDUCATION SCORE - 15 MARKS
+    # =====================================================
 
     education_keywords = [
+
         "btech",
         "b.tech",
+        "bachelor",
         "computer science",
         "engineering",
-        "bachelor"
+        "university",
+        "college",
+        "degree"
+
     ]
 
-    for keyword in education_keywords:
+    education_hits = sum(
 
-        if keyword in text.lower():
-            score += 5
+        1
+        for keyword in education_keywords
+        if keyword in text
 
-    return min(score, 100)
+    )
+
+    education_score = min(
+        education_hits * 2,
+        15
+    )
+
+
+    # =====================================================
+    # 4. EXPERIENCE / INTERNSHIP - 15 MARKS
+    # =====================================================
+
+    experience_keywords = [
+
+        "internship",
+        "intern",
+        "experience",
+        "work experience",
+        "employment",
+        "developer",
+        "engineer"
+
+    ]
+
+    experience_hits = sum(
+
+        1
+        for keyword in experience_keywords
+        if keyword in text
+
+    )
+
+    experience_score = min(
+        experience_hits * 2.5,
+        15
+    )
+
+
+    # =====================================================
+    # 5. RESUME COMPLETENESS - 15 MARKS
+    # =====================================================
+
+    completeness_sections = [
+
+        "education",
+        "skills",
+        "projects",
+        "contact",
+        "email",
+        "phone",
+        "resume",
+        "objective",
+        "summary",
+        "certification",
+        "certifications"
+
+    ]
+
+    completeness_hits = sum(
+
+        1
+        for section in completeness_sections
+        if section in text
+
+    )
+
+    completeness_score = min(
+        completeness_hits * 1.5,
+        15
+    )
+
+
+    # =====================================================
+    # FINAL SCORE
+    # =====================================================
+
+    score = (
+
+        skill_score
+        + project_score
+        + education_score
+        + experience_score
+        + completeness_score
+
+    )
+
+    return round(
+        min(score, 100)
+    )
 
 
 # =========================================================
@@ -334,6 +357,11 @@ def calculate_resume_score(text, detected_skills):
 def extract_resume_text(file_bytes, filename):
 
     filename = filename.lower()
+
+
+    # =====================================================
+    # PDF
+    # =====================================================
 
     if filename.endswith(".pdf"):
 
@@ -348,9 +376,15 @@ def extract_resume_text(file_bytes, filename):
             page_text = page.extract_text()
 
             if page_text:
+
                 text += page_text + "\n"
 
         return text
+
+
+    # =====================================================
+    # DOCX
+    # =====================================================
 
     elif filename.endswith(".docx"):
 
@@ -361,9 +395,15 @@ def extract_resume_text(file_bytes, filename):
         text = ""
 
         for paragraph in document.paragraphs:
+
             text += paragraph.text + "\n"
 
         return text
+
+
+    # =====================================================
+    # INVALID FILE
+    # =====================================================
 
     else:
 
@@ -386,35 +426,45 @@ async def upload_resume(
 
         file_bytes = await file.read()
 
+
         text = extract_resume_text(
             file_bytes,
             file.filename
         )
 
-        detected_skills = detect_skills(text)
+
+        detected_skills = detect_skills(
+            text
+        )
+
 
         resume_score = calculate_resume_score(
             text,
             detected_skills
         )
 
-        detected_domains = detect_domains(
-            text,
-            detected_skills
-        )
 
         return {
-            "success": True,
+
             "filename": file.filename,
+
             "detected_skills": detected_skills,
-            "skill_count": len(detected_skills),
+
+            "skill_count": len(
+                detected_skills
+            ),
+
             "resume_score": resume_score,
-            "detected_domains": detected_domains,
+
             "message": "Resume analyzed successfully"
+
         }
 
+
     except HTTPException:
+
         raise
+
 
     except Exception as e:
 
@@ -436,8 +486,8 @@ def get_jobs_from_database():
         dictionary=True
     )
 
-    cursor.execute(
-        """
+
+    cursor.execute("""
         SELECT
             id,
             job_title,
@@ -447,13 +497,16 @@ def get_jobs_from_database():
             required_skills,
             apply_url
         FROM jobs
-        """
-    )
+    """)
+
 
     jobs = cursor.fetchall()
 
+
     cursor.close()
+
     db.close()
+
 
     return jobs
 
@@ -469,11 +522,17 @@ def get_jobs():
 
         jobs = get_jobs_from_database()
 
+
         return {
+
             "success": True,
+
             "count": len(jobs),
+
             "jobs": jobs
+
         }
+
 
     except Exception as e:
 
@@ -492,68 +551,11 @@ LEARNING_MAP = {
     "python":
         "Learn Python fundamentals, functions, OOP and problem solving.",
 
-    "java":
-        "Learn Java fundamentals, OOP, collections and exception handling.",
-
-    "c++":
-        "Learn C++ fundamentals, STL, OOP and problem solving.",
-
-    "javascript":
-        "Learn JavaScript fundamentals, DOM, events and modern ES6.",
-
-    "typescript":
-        "Learn TypeScript types, interfaces, classes and modern JavaScript.",
-
-    "html":
-        "Learn HTML structure, forms, semantic tags and accessibility.",
-
-    "css":
-        "Learn CSS layouts, Flexbox, Grid, responsive design and animations.",
-
-    "react":
-        "Learn React components, props, state, hooks and API integration.",
-
-    "angular":
-        "Learn Angular components, services, routing and forms.",
-
-    "vue":
-        "Learn Vue components, directives, state and routing.",
-
-    "node.js":
-        "Learn Node.js, Express, REST APIs and backend development.",
-
-    "nodejs":
-        "Learn Node.js, Express, REST APIs and backend development.",
-
-    "fastapi":
-        "Learn FastAPI routes, APIs, request handling and database integration.",
-
-    "django":
-        "Learn Django models, views, URLs, templates and REST APIs.",
-
-    "flask":
-        "Learn Flask routes, APIs, templates and database integration.",
-
     "sql":
-        "Learn SQL queries, joins, subqueries, GROUP BY and database concepts.",
-
-    "mysql":
-        "Learn MySQL databases, tables, queries, joins and relationships.",
-
-    "postgresql":
-        "Learn PostgreSQL queries, indexing, relationships and database design.",
-
-    "mongodb":
-        "Learn MongoDB collections, documents, queries and aggregation.",
+        "Learn SQL queries, joins, subqueries, group by and database concepts.",
 
     "dsa":
         "Learn arrays, strings, linked lists, stacks, queues, trees and graphs.",
-
-    "algorithms":
-        "Learn searching, sorting, recursion, greedy algorithms and dynamic programming.",
-
-    "data structures":
-        "Learn arrays, linked lists, stacks, queues, trees, graphs and hash tables.",
 
     "oops":
         "Learn classes, objects, inheritance, polymorphism and abstraction.",
@@ -564,17 +566,14 @@ LEARNING_MAP = {
     "dbms":
         "Learn normalization, keys, transactions, indexing and SQL.",
 
-    "operating systems":
-        "Learn processes, threads, memory management, scheduling and file systems.",
-
-    "computer networks":
-        "Learn OSI, TCP/IP, HTTP, DNS, routing and networking fundamentals.",
-
     "git":
         "Learn Git commands, GitHub repositories, branching and version control.",
 
-    "github":
-        "Learn repositories, branches, pull requests and collaborative GitHub workflows.",
+    "fastapi":
+        "Learn FastAPI routes, APIs, request handling and database integration.",
+
+    "mysql":
+        "Learn MySQL databases, tables, queries, joins and relationships.",
 
     "pandas":
         "Learn DataFrame operations, filtering, grouping and data cleaning.",
@@ -582,74 +581,24 @@ LEARNING_MAP = {
     "numpy":
         "Learn arrays, mathematical operations and numerical computing.",
 
-    "matplotlib":
-        "Learn charts, plots and data visualization with Matplotlib.",
-
-    "seaborn":
-        "Learn statistical visualization and advanced charts with Seaborn.",
-
-    "scikit-learn":
-        "Learn preprocessing, machine learning models and model evaluation.",
-
     "machine learning":
         "Learn regression, classification, clustering and model evaluation.",
-
-    "deep learning":
-        "Learn neural networks, CNNs, training and deep learning fundamentals.",
-
-    "artificial intelligence":
-        "Learn AI fundamentals, machine learning, neural networks and intelligent systems.",
 
     "data science":
         "Learn Python, statistics, SQL, pandas, visualization and machine learning.",
 
-    "data analysis":
-        "Learn data cleaning, SQL, pandas, statistics and visualization.",
+    "javascript":
+        "Learn JavaScript fundamentals, DOM, events and modern ES6.",
 
-    "statistics":
-        "Learn probability, distributions, hypothesis testing and statistical analysis.",
+    "html":
+        "Learn HTML structure, forms, semantic tags and accessibility.",
 
-    "excel":
-        "Learn formulas, pivot tables, charts, lookup functions and data analysis.",
+    "css":
+        "Learn CSS layouts, Flexbox, Grid, responsive design and animations.",
 
-    "power bi":
-        "Learn dashboards, Power Query, data modeling and DAX.",
+    "react":
+        "Learn React components, props, state, hooks and API integration."
 
-    "tableau":
-        "Learn dashboards, charts, filters and data visualization.",
-
-    "aws":
-        "Learn AWS fundamentals, EC2, S3, IAM and cloud deployment.",
-
-    "azure":
-        "Learn Azure fundamentals, virtual machines, storage and cloud services.",
-
-    "docker":
-        "Learn Docker images, containers, Dockerfiles and deployment.",
-
-    "kubernetes":
-        "Learn pods, deployments, services and Kubernetes fundamentals.",
-
-    "linux":
-        "Learn Linux commands, file systems, permissions and process management.",
-
-    "cybersecurity":
-        "Learn security fundamentals, threats, vulnerabilities and defensive techniques.",
-
-    "network security":
-        "Learn network security fundamentals, firewalls and secure communication.",
-
-    "ethical hacking":
-        "Learn cybersecurity fundamentals, security testing concepts and defensive practices.",
-
-    "penetration testing":
-        "Learn security assessment methodology and penetration testing fundamentals.",
-
-    "cryptography":
-        "Learn encryption, hashing, keys and cryptographic fundamentals.",
-
-    "owasp":
-        "Learn common web security risks and secure application development."
 }
 
 
@@ -657,203 +606,47 @@ LEARNING_MAP = {
 # LEARNING SUGGESTIONS
 # =========================================================
 
-def get_learning_suggestions(missing_skills):
+def get_learning_suggestions(
+    missing_skills
+):
 
     suggestions = []
+
 
     for skill in missing_skills:
 
         skill_lower = skill.lower()
 
+
         if skill_lower in LEARNING_MAP:
 
             suggestions.append({
+
                 "skill": skill,
-                "suggestion": LEARNING_MAP[skill_lower]
+
+                "suggestion":
+                    LEARNING_MAP[skill_lower]
+
             })
+
 
         else:
 
             suggestions.append({
+
                 "skill": skill,
+
                 "suggestion":
                     f"Learn {skill} and practice it through projects."
+
             })
+
 
     return suggestions
 
 
 # =========================================================
-# JOB DOMAIN DETECTION
-# =========================================================
-
-def detect_job_domains(required_skills):
-
-    required_set = set(
-        skill.lower().strip()
-        for skill in required_skills
-    )
-
-    domains = []
-
-    for domain, skills in DOMAIN_SKILLS.items():
-
-        overlap = required_set.intersection(
-            set(skills)
-        )
-
-        if overlap:
-            domains.append(domain)
-
-    return domains
-
-
-# =========================================================
-# INTELLIGENT JOB MATCHING
-# =========================================================
-
-def calculate_intelligent_match(
-    detected_skills,
-    required_skills
-):
-
-    detected = set(
-        skill.lower().strip()
-        for skill in detected_skills
-    )
-
-    required = set(
-        skill.lower().strip()
-        for skill in required_skills
-    )
-
-    if not required:
-
-        return {
-            "match_percentage": 0,
-            "matched_skills": [],
-            "missing_skills": [],
-            "skill_score": 0,
-            "core_skill_score": 0,
-            "domain_score": 0
-        }
-
-    matched = sorted(
-        detected.intersection(required)
-    )
-
-    missing = sorted(
-        required - detected
-    )
-
-    skill_score = (
-        len(matched) /
-        len(required)
-    ) * 100
-
-    core_skills = {
-        "python",
-        "java",
-        "c++",
-        "javascript",
-        "typescript",
-        "sql",
-        "machine learning",
-        "artificial intelligence",
-        "react",
-        "fastapi",
-        "django",
-        "aws",
-        "docker"
-    }
-
-    core_required = required.intersection(
-        core_skills
-    )
-
-    if core_required:
-
-        core_matched = detected.intersection(
-            core_required
-        )
-
-        core_skill_score = (
-            len(core_matched) /
-            len(core_required)
-        ) * 100
-
-    else:
-
-        core_skill_score = skill_score
-
-    detected_domains = []
-
-    for domain, domain_skills in DOMAIN_SKILLS.items():
-
-        overlap = detected.intersection(
-            set(domain_skills)
-        )
-
-        if overlap:
-            detected_domains.append(domain)
-
-    job_domains = detect_job_domains(
-        required_skills
-    )
-
-    if job_domains:
-
-        matching_domains = set(
-            detected_domains
-        ).intersection(
-            set(job_domains)
-        )
-
-        domain_score = (
-            len(matching_domains) /
-            len(job_domains)
-        ) * 100
-
-    else:
-
-        domain_score = 0
-
-    final_score = (
-        skill_score * 0.70
-        +
-        core_skill_score * 0.20
-        +
-        domain_score * 0.10
-    )
-
-    final_score = round(
-        min(final_score, 100)
-    )
-
-    return {
-
-        "match_percentage":
-            final_score,
-
-        "matched_skills":
-            matched,
-
-        "missing_skills":
-            missing,
-
-        "skill_score":
-            round(skill_score),
-
-        "core_skill_score":
-            round(core_skill_score),
-
-        "domain_score":
-            round(domain_score)
-    }
-
-
-# =========================================================
-# MATCH JOBS
+# JOB MATCHING
 # =========================================================
 
 @app.post("/match-jobs")
@@ -863,51 +656,131 @@ async def match_jobs(
 
     try:
 
+        # =================================================
+        # READ RESUME
+        # =================================================
+
         file_bytes = await file.read()
+
 
         text = extract_resume_text(
             file_bytes,
             file.filename
         )
 
+
+        # =================================================
+        # DETECT SKILLS
+        # =================================================
+
         detected_skills = detect_skills(
             text
         )
+
+
+        # =================================================
+        # CALCULATE REALISTIC RESUME SCORE
+        # =================================================
 
         resume_score = calculate_resume_score(
             text,
             detected_skills
         )
 
-        detected_domains = detect_domains(
-            text,
-            detected_skills
-        )
+
+        # =================================================
+        # GET JOBS
+        # =================================================
 
         jobs = get_jobs_from_database()
 
+
         matched_jobs = []
+
+
+        # =================================================
+        # MATCH EVERY JOB
+        # =================================================
 
         for job in jobs:
 
+
+            # ---------------------------------------------
+            # REQUIRED SKILLS
+            # ---------------------------------------------
+
             required_skills = [
+
                 skill.strip().lower()
-                for skill in job["required_skills"].split(",")
-                if skill.strip()
+
+                for skill in
+                job["required_skills"].split(",")
+
             ]
 
-            match_result = calculate_intelligent_match(
-                detected_skills,
-                required_skills
-            )
 
-            missing_skills = match_result[
-                "missing_skills"
+            # ---------------------------------------------
+            # USER SKILLS
+            # ---------------------------------------------
+
+            user_skills = [
+
+                skill.lower()
+
+                for skill in detected_skills
+
             ]
 
-            job_domains = detect_job_domains(
-                required_skills
-            )
+
+            matched_skills = []
+
+            missing_skills = []
+
+
+            # ---------------------------------------------
+            # COMPARE SKILLS
+            # ---------------------------------------------
+
+            for skill in required_skills:
+
+                if skill in user_skills:
+
+                    matched_skills.append(
+                        skill
+                    )
+
+                else:
+
+                    missing_skills.append(
+                        skill
+                    )
+
+
+            # ---------------------------------------------
+            # MATCH PERCENTAGE
+            # ---------------------------------------------
+
+            if len(required_skills) > 0:
+
+                match_percentage = round(
+
+                    (
+                        len(matched_skills)
+                        /
+                        len(required_skills)
+                    )
+                    * 100
+
+                )
+
+            else:
+
+                match_percentage = 0
+
+
+            # ---------------------------------------------
+            # ADD JOB
+            # ---------------------------------------------
 
             matched_jobs.append({
 
@@ -926,42 +799,17 @@ async def match_jobs(
                 "experience":
                     job["experience"],
 
-                "job_domains":
-                    job_domains,
-
                 "required_skills":
                     required_skills,
 
                 "matched_skills":
-                    match_result[
-                        "matched_skills"
-                    ],
+                    matched_skills,
 
                 "missing_skills":
                     missing_skills,
 
                 "match_percentage":
-                    match_result[
-                        "match_percentage"
-                    ],
-
-                "match_breakdown": {
-
-                    "skill_score":
-                        match_result[
-                            "skill_score"
-                        ],
-
-                    "core_skill_score":
-                        match_result[
-                            "core_skill_score"
-                        ],
-
-                    "domain_score":
-                        match_result[
-                            "domain_score"
-                        ]
-                },
+                    match_percentage,
 
                 "apply_url":
                     job["apply_url"],
@@ -970,18 +818,31 @@ async def match_jobs(
                     get_learning_suggestions(
                         missing_skills
                     )
+
             })
 
+
+        # =================================================
+        # SORT BY MATCH
+        # =================================================
+
         matched_jobs.sort(
+
             key=lambda x:
                 x["match_percentage"],
+
             reverse=True
+
         )
+
+
+        # =================================================
+        # FINAL RESPONSE
+        # =================================================
 
         return {
 
-            "success":
-                True,
+            "success": True,
 
             "filename":
                 file.filename,
@@ -992,25 +853,26 @@ async def match_jobs(
             "detected_skills":
                 detected_skills,
 
-            "skill_count":
-                len(detected_skills),
-
-            "detected_domains":
-                detected_domains,
-
             "total_jobs_checked":
                 len(jobs),
 
             "recommendations":
                 matched_jobs
+
         }
 
+
     except HTTPException:
+
         raise
+
 
     except Exception as e:
 
         raise HTTPException(
+
             status_code=500,
+
             detail=str(e)
+
         )
