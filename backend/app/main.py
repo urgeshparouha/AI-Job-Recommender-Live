@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pypdf import PdfReader
@@ -9,7 +10,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 # =========================================================
 # FASTAPI APP
 # =========================================================
@@ -20,26 +20,25 @@ app = FastAPI(
     version="3.0.0"
 )
 
-
 # =========================================================
-# CORS
+# CORS - UPDATED
 # =========================================================
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=[
+        "https://ai-job-recommender-frontend.onrender.com"
+    ],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # =========================================================
 # MYSQL DATABASE CONNECTION
 # =========================================================
 
 def get_db_connection():
-
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
         user=os.getenv("DB_USER", "root"),
@@ -47,26 +46,21 @@ def get_db_connection():
         database=os.getenv("DB_NAME", "ai_job_recommender")
     )
 
-
 # =========================================================
 # BASIC ROUTES
 # =========================================================
 
 @app.get("/")
 def home():
-
     return {
         "message": "AI Job Recommender Backend is Running!"
     }
 
-
 @app.get("/health")
 def health():
-
     return {
         "status": "healthy"
     }
-
 
 # =========================================================
 # DATABASE TEST
@@ -74,15 +68,11 @@ def health():
 
 @app.get("/db-test")
 def db_test():
-
     try:
-
         db = get_db_connection()
-
         cursor = db.cursor()
 
         cursor.execute("SELECT DATABASE()")
-
         result = cursor.fetchone()
 
         cursor.close()
@@ -94,19 +84,16 @@ def db_test():
         }
 
     except Exception as e:
-
         return {
             "success": False,
             "error": str(e)
         }
-
 
 # =========================================================
 # SKILLS LIST
 # =========================================================
 
 SKILLS = [
-
     "python",
     "java",
     "c++",
@@ -118,15 +105,12 @@ SKILLS = [
     "fastapi",
     "django",
     "flask",
-
     "sql",
     "mysql",
     "postgresql",
     "mongodb",
-
     "git",
     "github",
-
     "dsa",
     "algorithms",
     "data structures",
@@ -135,82 +119,51 @@ SKILLS = [
     "dbms",
     "operating systems",
     "computer networks",
-
     "pandas",
     "numpy",
     "matplotlib",
     "scikit-learn",
-
     "machine learning",
     "deep learning",
     "artificial intelligence",
     "data science",
-
     "excel",
     "power bi",
     "tableau",
-
     "aws",
     "azure",
     "docker"
-
 ]
-
 
 # =========================================================
 # SKILL DETECTION
 # =========================================================
 
 def detect_skills(text):
-
     text = text.lower()
-
     detected = []
 
     for skill in SKILLS:
-
         if skill.lower() in text:
-
             detected.append(skill)
 
     return detected
 
-
 # =========================================================
-# REALISTIC RESUME SCORE
-# =========================================================
-#
-# TOTAL = 100
-#
-# Skills                 = 35
-# Projects               = 20
-# Education              = 15
-# Experience/Internship  = 15
-# Resume Completeness    = 15
-#
+# RESUME SCORE
 # =========================================================
 
 def calculate_resume_score(text, detected_skills):
-
     text = text.lower()
 
-
-    # =====================================================
-    # 1. SKILLS SCORE - 35 MARKS
-    # =====================================================
-
+    # 1. SKILLS - 35 MARKS
     skill_score = min(
         len(detected_skills) * 2.5,
         35
     )
 
-
-    # =====================================================
-    # 2. PROJECTS SCORE - 20 MARKS
-    # =====================================================
-
+    # 2. PROJECTS - 20 MARKS
     project_keywords = [
-
         "project",
         "projects",
         "github",
@@ -219,15 +172,11 @@ def calculate_resume_score(text, detected_skills):
         "implemented",
         "application",
         "system"
-
     ]
 
     project_hits = sum(
-
-        1
-        for keyword in project_keywords
+        1 for keyword in project_keywords
         if keyword in text
-
     )
 
     project_score = min(
@@ -235,13 +184,8 @@ def calculate_resume_score(text, detected_skills):
         20
     )
 
-
-    # =====================================================
-    # 3. EDUCATION SCORE - 15 MARKS
-    # =====================================================
-
+    # 3. EDUCATION - 15 MARKS
     education_keywords = [
-
         "btech",
         "b.tech",
         "bachelor",
@@ -250,15 +194,11 @@ def calculate_resume_score(text, detected_skills):
         "university",
         "college",
         "degree"
-
     ]
 
     education_hits = sum(
-
-        1
-        for keyword in education_keywords
+        1 for keyword in education_keywords
         if keyword in text
-
     )
 
     education_score = min(
@@ -266,13 +206,8 @@ def calculate_resume_score(text, detected_skills):
         15
     )
 
-
-    # =====================================================
-    # 4. EXPERIENCE / INTERNSHIP - 15 MARKS
-    # =====================================================
-
+    # 4. EXPERIENCE - 15 MARKS
     experience_keywords = [
-
         "internship",
         "intern",
         "experience",
@@ -280,15 +215,11 @@ def calculate_resume_score(text, detected_skills):
         "employment",
         "developer",
         "engineer"
-
     ]
 
     experience_hits = sum(
-
-        1
-        for keyword in experience_keywords
+        1 for keyword in experience_keywords
         if keyword in text
-
     )
 
     experience_score = min(
@@ -296,13 +227,8 @@ def calculate_resume_score(text, detected_skills):
         15
     )
 
-
-    # =====================================================
-    # 5. RESUME COMPLETENESS - 15 MARKS
-    # =====================================================
-
+    # 5. COMPLETENESS - 15 MARKS
     completeness_sections = [
-
         "education",
         "skills",
         "projects",
@@ -314,15 +240,11 @@ def calculate_resume_score(text, detected_skills):
         "summary",
         "certification",
         "certifications"
-
     ]
 
     completeness_hits = sum(
-
-        1
-        for section in completeness_sections
+        1 for section in completeness_sections
         if section in text
-
     )
 
     completeness_score = min(
@@ -330,162 +252,98 @@ def calculate_resume_score(text, detected_skills):
         15
     )
 
-
-    # =====================================================
     # FINAL SCORE
-    # =====================================================
-
     score = (
-
         skill_score
         + project_score
         + education_score
         + experience_score
         + completeness_score
-
     )
 
-    return round(
-        min(score, 100)
-    )
-
+    return round(min(score, 100))
 
 # =========================================================
 # RESUME TEXT EXTRACTION
 # =========================================================
 
 def extract_resume_text(file_bytes, filename):
-
     filename = filename.lower()
 
-
-    # =====================================================
     # PDF
-    # =====================================================
-
     if filename.endswith(".pdf"):
-
-        reader = PdfReader(
-            io.BytesIO(file_bytes)
-        )
-
+        reader = PdfReader(io.BytesIO(file_bytes))
         text = ""
 
         for page in reader.pages:
-
             page_text = page.extract_text()
-
             if page_text:
-
                 text += page_text + "\n"
 
         return text
 
-
-    # =====================================================
     # DOCX
-    # =====================================================
-
     elif filename.endswith(".docx"):
-
-        document = Document(
-            io.BytesIO(file_bytes)
-        )
-
+        document = Document(io.BytesIO(file_bytes))
         text = ""
 
         for paragraph in document.paragraphs:
-
             text += paragraph.text + "\n"
 
         return text
 
-
-    # =====================================================
-    # INVALID FILE
-    # =====================================================
-
     else:
-
         raise HTTPException(
             status_code=400,
             detail="Only PDF and DOCX files are supported."
         )
-
 
 # =========================================================
 # UPLOAD RESUME
 # =========================================================
 
 @app.post("/upload-resume")
-async def upload_resume(
-    file: UploadFile = File(...)
-):
-
+async def upload_resume(file: UploadFile = File(...)):
     try:
-
         file_bytes = await file.read()
-
 
         text = extract_resume_text(
             file_bytes,
             file.filename
         )
 
-
-        detected_skills = detect_skills(
-            text
-        )
-
+        detected_skills = detect_skills(text)
 
         resume_score = calculate_resume_score(
             text,
             detected_skills
         )
 
-
         return {
-
             "filename": file.filename,
-
             "detected_skills": detected_skills,
-
-            "skill_count": len(
-                detected_skills
-            ),
-
+            "skill_count": len(detected_skills),
             "resume_score": resume_score,
-
             "message": "Resume analyzed successfully"
-
         }
 
-
     except HTTPException:
-
         raise
 
-
     except Exception as e:
-
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-
 
 # =========================================================
 # GET JOBS FROM MYSQL
 # =========================================================
 
 def get_jobs_from_database():
-
     db = get_db_connection()
 
-    cursor = db.cursor(
-        dictionary=True
-    )
-
+    cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
         SELECT
@@ -499,17 +357,12 @@ def get_jobs_from_database():
         FROM jobs
     """)
 
-
     jobs = cursor.fetchall()
 
-
     cursor.close()
-
     db.close()
 
-
     return jobs
-
 
 # =========================================================
 # GET ALL JOBS
@@ -517,37 +370,26 @@ def get_jobs_from_database():
 
 @app.get("/jobs")
 def get_jobs():
-
     try:
-
         jobs = get_jobs_from_database()
 
-
         return {
-
             "success": True,
-
             "count": len(jobs),
-
             "jobs": jobs
-
         }
 
-
     except Exception as e:
-
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-
 
 # =========================================================
 # LEARNING MAP
 # =========================================================
 
 LEARNING_MAP = {
-
     "python":
         "Learn Python fundamentals, functions, OOP and problem solving.",
 
@@ -598,281 +440,136 @@ LEARNING_MAP = {
 
     "react":
         "Learn React components, props, state, hooks and API integration."
-
 }
-
 
 # =========================================================
 # LEARNING SUGGESTIONS
 # =========================================================
 
-def get_learning_suggestions(
-    missing_skills
-):
-
+def get_learning_suggestions(missing_skills):
     suggestions = []
 
-
     for skill in missing_skills:
-
         skill_lower = skill.lower()
 
-
         if skill_lower in LEARNING_MAP:
-
             suggestions.append({
-
                 "skill": skill,
-
-                "suggestion":
-                    LEARNING_MAP[skill_lower]
-
+                "suggestion": LEARNING_MAP[skill_lower]
             })
-
 
         else:
-
             suggestions.append({
-
                 "skill": skill,
-
                 "suggestion":
                     f"Learn {skill} and practice it through projects."
-
             })
 
-
     return suggestions
-
 
 # =========================================================
 # JOB MATCHING
 # =========================================================
 
 @app.post("/match-jobs")
-async def match_jobs(
-    file: UploadFile = File(...)
-):
-
+async def match_jobs(file: UploadFile = File(...)):
     try:
-
-        # =================================================
         # READ RESUME
-        # =================================================
-
         file_bytes = await file.read()
-
 
         text = extract_resume_text(
             file_bytes,
             file.filename
         )
 
-
-        # =================================================
         # DETECT SKILLS
-        # =================================================
+        detected_skills = detect_skills(text)
 
-        detected_skills = detect_skills(
-            text
-        )
-
-
-        # =================================================
-        # CALCULATE REALISTIC RESUME SCORE
-        # =================================================
-
+        # CALCULATE RESUME SCORE
         resume_score = calculate_resume_score(
             text,
             detected_skills
         )
 
-
-        # =================================================
         # GET JOBS
-        # =================================================
-
         jobs = get_jobs_from_database()
-
 
         matched_jobs = []
 
-
-        # =================================================
         # MATCH EVERY JOB
-        # =================================================
-
         for job in jobs:
 
-
-            # ---------------------------------------------
             # REQUIRED SKILLS
-            # ---------------------------------------------
-
             required_skills = [
-
                 skill.strip().lower()
-
-                for skill in
-                job["required_skills"].split(",")
-
+                for skill in job["required_skills"].split(",")
             ]
 
-
-            # ---------------------------------------------
             # USER SKILLS
-            # ---------------------------------------------
-
             user_skills = [
-
                 skill.lower()
-
                 for skill in detected_skills
-
             ]
-
 
             matched_skills = []
-
             missing_skills = []
 
-
-            # ---------------------------------------------
             # COMPARE SKILLS
-            # ---------------------------------------------
-
             for skill in required_skills:
-
                 if skill in user_skills:
-
-                    matched_skills.append(
-                        skill
-                    )
-
+                    matched_skills.append(skill)
                 else:
+                    missing_skills.append(skill)
 
-                    missing_skills.append(
-                        skill
-                    )
-
-
-            # ---------------------------------------------
             # MATCH PERCENTAGE
-            # ---------------------------------------------
-
             if len(required_skills) > 0:
-
                 match_percentage = round(
-
                     (
                         len(matched_skills)
-                        /
-                        len(required_skills)
-                    )
-                    * 100
-
+                        / len(required_skills)
+                    ) * 100
                 )
-
             else:
-
                 match_percentage = 0
 
-
-            # ---------------------------------------------
             # ADD JOB
-            # ---------------------------------------------
-
             matched_jobs.append({
-
-                "job_id":
-                    job["id"],
-
-                "job_title":
-                    job["job_title"],
-
-                "company":
-                    job["company"],
-
-                "location":
-                    job["location"],
-
-                "experience":
-                    job["experience"],
-
-                "required_skills":
-                    required_skills,
-
-                "matched_skills":
-                    matched_skills,
-
-                "missing_skills":
-                    missing_skills,
-
-                "match_percentage":
-                    match_percentage,
-
-                "apply_url":
-                    job["apply_url"],
-
-                "what_to_learn":
-                    get_learning_suggestions(
-                        missing_skills
-                    )
-
+                "job_id": job["id"],
+                "job_title": job["job_title"],
+                "company": job["company"],
+                "location": job["location"],
+                "experience": job["experience"],
+                "required_skills": required_skills,
+                "matched_skills": matched_skills,
+                "missing_skills": missing_skills,
+                "match_percentage": match_percentage,
+                "apply_url": job["apply_url"],
+                "what_to_learn": get_learning_suggestions(
+                    missing_skills
+                )
             })
 
-
-        # =================================================
         # SORT BY MATCH
-        # =================================================
-
         matched_jobs.sort(
-
-            key=lambda x:
-                x["match_percentage"],
-
+            key=lambda x: x["match_percentage"],
             reverse=True
-
         )
 
-
-        # =================================================
         # FINAL RESPONSE
-        # =================================================
-
         return {
-
             "success": True,
-
-            "filename":
-                file.filename,
-
-            "resume_score":
-                resume_score,
-
-            "detected_skills":
-                detected_skills,
-
-            "total_jobs_checked":
-                len(jobs),
-
-            "recommendations":
-                matched_jobs
-
+            "filename": file.filename,
+            "resume_score": resume_score,
+            "detected_skills": detected_skills,
+            "total_jobs_checked": len(jobs),
+            "recommendations": matched_jobs
         }
 
-
     except HTTPException:
-
         raise
 
-
     except Exception as e:
-
         raise HTTPException(
-
             status_code=500,
-
             detail=str(e)
-
         )
